@@ -1,9 +1,9 @@
-'use client';
+'use client'
 
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { theme } from '../styles/theme';
-import { createGlobalStyle } from 'styled-components';
+import { ThemeProvider } from '@mui/material/styles'
+import CssBaseline from '@mui/material/CssBaseline'
+import { theme } from '../styles/theme'
+import { createGlobalStyle } from 'styled-components'
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Estonia&display=swap');
@@ -31,26 +31,22 @@ const GlobalStyle = createGlobalStyle`
     font-size-adjust: 0.5;
     letter-spacing: 0.02em;
   }
-`;
+`
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en">
-      <head>
-        <title>Constantine & Lauren's Halloween Wedding</title>
-        <meta name="description" content="Join us for our Halloween Masquerade Wedding Celebration" />
-      </head>
-      <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <GlobalStyle />
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <html lang="en">
+            <head>
+                <title>Constantine & Lauren&apos;s Halloween Wedding</title>
+                <meta name="description" content="Join us for our Halloween Masquerade Wedding Celebration" />
+            </head>
+            <body>
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <GlobalStyle />
+                    {children}
+                </ThemeProvider>
+            </body>
+        </html>
+    )
 }

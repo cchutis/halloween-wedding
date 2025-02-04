@@ -45,7 +45,7 @@ const VideoOverlay = styled.div`
     z-index: 1;
 `
 
-const GoldText = styled(Typography)`
+const GoldText = styled((props: any) => <Typography component="h1" {...props} />)`
     color: #b8860b;
 `
 
@@ -59,7 +59,7 @@ export default function Home() {
                     <source src="/roses.mp4" type="video/mp4" />
                 </video>
                 <Container sx={{ zIndex: 4 }}>
-                    <GoldText variant="h1" component="h1" gutterBottom>
+                    <GoldText variant="h1" gutterBottom>
                         Constantine & Lauren
                     </GoldText>
                     <Typography variant="h3" gutterBottom sx={{ color: '#CD7F32' }}>
