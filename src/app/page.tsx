@@ -50,6 +50,30 @@ const GoldText = styled((props: any) => <Typography component="h1" {...props} />
     color: #b8860b;
 `
 
+const AboutImage = styled.img`
+    width: 400px;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(184, 134, 11, 0.3);
+`
+
+const AboutContent = styled(Box)`
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+`
+
+const TextContent = styled(Box)`
+    flex: 1;
+`
+
 export default function Home() {
     return (
         <Box>
@@ -75,10 +99,26 @@ export default function Home() {
 
             <Section id="about">
                 <Container>
-                    <GoldText variant="h2" gutterBottom>
-                        Our Story
-                    </GoldText>
-                    <Typography>Join us for an enchanted evening as we celebrate our love with a mystical Halloween wedding celebration.</Typography>
+                    <AboutContent>
+                        <AboutImage src="./couple.jpg" alt="Constantine and Lauren" />
+                        <TextContent>
+                            <GoldText variant="h2" gutterBottom>
+                                Our Story
+                            </GoldText>
+                            <Typography paragraph>
+                                On a misty Halloween night in Salem, Massachusetts, fate brought Constantine and Lauren together in the most peculiar way. Constantine, a software engineer by day and amateur ghost hunter by night, was investigating reports of mysterious code appearing in the
+                                town&apos;s ancient library computers. Meanwhile, Lauren, a skilled veterinarian specializing in black cats, was tracking an unusually intelligent feline that had been reorganizing the library&apos;s occult section.
+                            </Typography>
+                            <Typography paragraph>
+                                Their paths crossed when both reached for the same dusty tome titled &quot;Programming Spells: Where Technology Meets Magic.&quot; As their hands touched, all the computers in the library mysteriously lit up with cascading green text, and the black cat in question let
+                                out what sounded suspiciously like a laugh. They spent the entire night debugging haunted computers and discussing the intersection of modern technology and ancient magic, all while sharing a pumpkin spice latte that never seemed to run empty.
+                            </Typography>
+                            <Typography>
+                                Now, they&apos;re combining their unique talents to create the most enchanted wedding celebration ever witnessed, complete with AI-powered crystal balls and ethically sourced eye of newt. Their shared love of Halloween, technology, and the unexplained has blossomed
+                                into a love story that proves sometimes the best relationships begin with a little bit of magic and a lot of debugging.
+                            </Typography>
+                        </TextContent>
+                    </AboutContent>
                 </Container>
             </Section>
 
