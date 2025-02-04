@@ -45,6 +45,7 @@ const VideoOverlay = styled.div`
     z-index: 1;
 `
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const GoldText = styled((props: any) => <Typography component="h1" {...props} />)`
     color: #b8860b;
 `
