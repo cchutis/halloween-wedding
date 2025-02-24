@@ -27,8 +27,12 @@ const Navigation = () => {
           <NavButton onClick={() => scrollToSection('hero')}>Home</NavButton>
           <NavButton onClick={() => scrollToSection('about')}>Our Story</NavButton>
           <NavButton onClick={() => scrollToSection('when-where')}>When & Where</NavButton>
+          <NavButton onClick={() => scrollToSection('wedding-party')}>Wedding Party</NavButton>
           <NavButton onClick={() => scrollToSection('hotels')}>Hotels</NavButton>
+          <NavButton onClick={() => scrollToSection('honeyfund')}>Honeyfund</NavButton>
+          <NavButton onClick={() => scrollToSection('song-requests')}>Song Requests</NavButton>
           <NavButton onClick={() => scrollToSection('masquerade')}>Masquerade</NavButton>
+          <NavButton onClick={() => scrollToSection('contact')}>Contact Us</NavButton>
         </Box>
       </Toolbar>
     </StyledAppBar>
