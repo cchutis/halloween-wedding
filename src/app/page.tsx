@@ -144,17 +144,17 @@ const SubmitButton = styled.button`
 
 const HoneyfundLink = styled.a`
     text-decoration: none;
-    color: #B8860B;
+    color: #b8860b;
     font-size: 1.2rem;
     font-weight: bold;
     padding: 12px 24px;
-    border: 2px solid #B8860B;
+    border: 2px solid #b8860b;
     border-radius: 4px;
     transition: all 0.3s ease;
-    
+
     &:hover {
-        background-color: #B8860B;
-        color: #1A1A1A;
+        background-color: #b8860b;
+        color: #1a1a1a;
     }
 `
 
@@ -221,7 +221,7 @@ export default function Home() {
                 </Container>
             </Section>
 
-            <Section id="wedding-party" style={{ backgroundColor: '#1C1C1C' }}>
+            {/* <Section id="wedding-party" style={{ backgroundColor: '#1C1C1C' }}>
                 <Container>
                     <GoldText variant="h2" gutterBottom>
                         Wedding Party
@@ -229,7 +229,7 @@ export default function Home() {
                     <Typography paragraph>We can&apos;t wait to introduce you to the incredible friends and family standing by our side on our big day! Each of them has played a special role in our journey, and we&apos;re so grateful to have them celebrating with us.</Typography>
                     <Typography paragraph>Check back soon for a sneak peek at our wedding party, complete with photos, fun bios, and maybe even a little insider scoop on how we met each of them.</Typography>
                 </Container>
-            </Section>
+            </Section> */}
 
             <Section id="hotels" style={{ backgroundColor: '#23272E' }}>
                 <Container>
@@ -492,6 +492,50 @@ export default function Home() {
                 </Container>
             </Section>
 
+            <Section id="song-requests" style={{ backgroundColor: '#1C1C1C' }}>
+                <Container>
+                    <GoldText variant="h2" gutterBottom>
+                        Song Requests
+                    </GoldText>
+                    <Typography paragraph>
+                        Help us build the ultimate wedding playlist! If there&apos;s a song that will get you on the dance floor, let us know—we want to make sure there&apos;s something for everyone. Whether it&apos;s a classic, a guilty pleasure, or a Halloween-themed banger, we&apos;re taking
+                        requests!
+                    </Typography>
+                    <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
+                        <iframe src="https://open.spotify.com/embed/playlist/7kgTGs1bijkEt0RsOpoYr0" width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{ maxWidth: '700px' }}></iframe>
+                        <Box sx={{ textAlign: 'center', maxWidth: '600px' }}>
+                            <Typography variant="h6" gutterBottom sx={{ color: '#b8860b' }}>
+                                How to Add Songs:
+                            </Typography>
+                            <Typography paragraph>
+                                1. Follow our collaborative playlist on Spotify
+                                <br />
+                                2. Search for your favorite songs
+                                <br />
+                                3. Add them directly to the playlist
+                            </Typography>
+                            <a
+                                href="https://open.spotify.com/playlist/7kgTGs1bijkEt0RsOpoYr0?si=adb8a8c428cf469b&pt=8832f8a853e68cf32008db7d44f845b7"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                    display: 'inline-block',
+                                    backgroundColor: '#1DB954',
+                                    color: 'white',
+                                    padding: '12px 24px',
+                                    borderRadius: '24px',
+                                    textDecoration: 'none',
+                                    fontWeight: 'bold',
+                                    marginTop: '16px',
+                                }}
+                            >
+                                Open in Spotify
+                            </a>
+                        </Box>
+                    </Box>
+                </Container>
+            </Section>
+
             <Section id="honeyfund" style={{ backgroundColor: '#1A1A1A' }}>
                 <Container>
                     <GoldText variant="h2" gutterBottom>
@@ -534,68 +578,11 @@ export default function Home() {
                         >
                             💛 Want to gift us an experience?
                         </Typography>
-                        <HoneyfundLink
-                            href="INSERT_HONEYFUND_LINK_HERE"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Visit our Honeyfund
-                        </HoneyfundLink>
-                    </Box>
-
-                    {/* Honeyfund Widget - Uncomment and replace with actual widget code when available */}
-                    {/* <Box sx={{ width: '100%', mt: 4 }}>
-                        <iframe 
-                            src="HONEYFUND_WIDGET_URL"
-                            width="100%"
-                            height="600px"
-                            frameBorder="0"
-                            scrolling="no"
-                        />
-                    </Box> */}
-                </Container>
-            </Section>
-
-            <Section id="song-requests" style={{ backgroundColor: '#1C1C1C' }}>
-                <Container>
-                    <GoldText variant="h2" gutterBottom>
-                        Song Requests
-                    </GoldText>
-                    <Typography paragraph>
-                        Help us build the ultimate wedding playlist! If there&apos;s a song that will get you on the dance floor, let us know—we want to make sure there&apos;s something for everyone. Whether it&apos;s a classic, a guilty pleasure, or a Halloween-themed banger, we&apos;re taking
-                        requests!
-                    </Typography>
-                    <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                        <iframe src="https://open.spotify.com/embed/playlist/7kgTGs1bijkEt0RsOpoYr0" width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{ maxWidth: '700px' }}></iframe>
-                        <Box sx={{ textAlign: 'center', maxWidth: '600px' }}>
-                            <Typography variant="h6" gutterBottom sx={{ color: '#b8860b' }}>
-                                How to Add Songs:
-                            </Typography>
-                            <Typography paragraph>
-                                1. Follow our collaborative playlist on Spotify
-                                <br />
-                                2. Search for your favorite songs
-                                <br />
-                                3. Add them directly to the playlist
-                            </Typography>
-                            <a
-                                href="https://open.spotify.com/playlist/7kgTGs1bijkEt0RsOpoYr0?si=TkWJdWZITCi5lASoxExnbA"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                style={{
-                                    display: 'inline-block',
-                                    backgroundColor: '#1DB954',
-                                    color: 'white',
-                                    padding: '12px 24px',
-                                    borderRadius: '24px',
-                                    textDecoration: 'none',
-                                    fontWeight: 'bold',
-                                    marginTop: '16px',
-                                }}
-                            >
-                                Open in Spotify
+                        <div style="width:200px;margin:0 auto;">
+                            <a href="http://www.honeyfund.com/site/chutis-o-malley-10-31-2025" style="text-align:left;background:url('http://www.honeyfund.com/share/honeyfund3.png') no-repeat;display:block;width:200px;height:100px;text-indent:-9999em;">
+                                Visit our honeyfund at Honeyfund.com, the free honeymoon registry
                             </a>
-                        </Box>
+                        </div>
                     </Box>
                 </Container>
             </Section>
