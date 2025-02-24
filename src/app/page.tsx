@@ -45,6 +45,13 @@ const VideoOverlay = styled.div`
     background-color: rgba(0, 0, 0, 0.9);
     z-index: 1;
 `
+const HoneyfundLink = styled.a`
+    color: #b8860b;
+    text-decoration: none;
+    &:hover {
+        color: #cd7f32;
+    }
+`
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const GoldText = styled((props: any) => <Typography component="h1" {...props} />)`
@@ -523,7 +530,7 @@ export default function Home() {
             <Section id="honeyfund" style={{ backgroundColor: '#1A1A1A' }}>
                 <Container>
                     <GoldText variant="h2" gutterBottom>
-                        Honeyfund – The Best Gift is You!
+                        Registry: Honeyfund
                     </GoldText>
 
                     <Typography
@@ -562,21 +569,9 @@ export default function Home() {
                         >
                             💛 Want to gift us an experience?
                         </Typography>
-                        <div style={{ width: '200px', margin: '0 auto' }}>
-                            <a
-                                href="http://www.honeyfund.com/site/chutis-o-malley-10-31-2025"
-                                style={{
-                                    textAlign: 'left',
-                                    background: 'url("http://www.honeyfund.com/share/honeyfund3.png") no-repeat',
-                                    display: 'block',
-                                    width: '200px',
-                                    height: '100px',
-                                    textIndent: '-9999em',
-                                }}
-                            >
-                                Visit our honeyfund at Honeyfund.com, the free honeymoon registry
-                            </a>
-                        </div>
+                        <HoneyfundLink href="https://www.honeyfund.com/site/chutis-o-malley-10-31-2025" target="_blank" rel="noopener">
+                            Visit our Registry
+                        </HoneyfundLink>
                     </Box>
                 </Container>
             </Section>
