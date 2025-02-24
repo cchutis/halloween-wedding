@@ -562,8 +562,18 @@ export default function Home() {
                         >
                             💛 Want to gift us an experience?
                         </Typography>
-                        <div style="width:200px;margin:0 auto;">
-                            <a href="http://www.honeyfund.com/site/chutis-o-malley-10-31-2025" style="text-align:left;background:url('http://www.honeyfund.com/share/honeyfund3.png') no-repeat;display:block;width:200px;height:100px;text-indent:-9999em;">
+                        <div style={{ width: '200px', margin: '0 auto' }}>
+                            <a
+                                href="http://www.honeyfund.com/site/chutis-o-malley-10-31-2025"
+                                style={{
+                                    textAlign: 'left',
+                                    background: 'url("http://www.honeyfund.com/share/honeyfund3.png") no-repeat',
+                                    display: 'block',
+                                    width: '200px',
+                                    height: '100px',
+                                    textIndent: '-9999em',
+                                }}
+                            >
                                 Visit our honeyfund at Honeyfund.com, the free honeymoon registry
                             </a>
                         </div>
