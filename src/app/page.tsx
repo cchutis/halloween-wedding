@@ -142,22 +142,6 @@ const SubmitButton = styled.button`
     }
 `
 
-const HoneyfundLink = styled.a`
-    text-decoration: none;
-    color: #b8860b;
-    font-size: 1.2rem;
-    font-weight: bold;
-    padding: 12px 24px;
-    border: 2px solid #b8860b;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-
-    &:hover {
-        background-color: #b8860b;
-        color: #1a1a1a;
-    }
-`
-
 export default function Home() {
     return (
         <Box>
