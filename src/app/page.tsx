@@ -142,6 +142,22 @@ const SubmitButton = styled.button`
     }
 `
 
+const HoneyfundLink = styled.a`
+    text-decoration: none;
+    color: #B8860B;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 12px 24px;
+    border: 2px solid #B8860B;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+        background-color: #B8860B;
+        color: #1A1A1A;
+    }
+`
+
 export default function Home() {
     return (
         <Box>
@@ -518,27 +534,13 @@ export default function Home() {
                         >
                             💛 Want to gift us an experience?
                         </Typography>
-                        <a
+                        <HoneyfundLink
                             href="INSERT_HONEYFUND_LINK_HERE"
                             target="_blank"
                             rel="noopener noreferrer"
-                            style={{
-                                textDecoration: 'none',
-                                color: '#B8860B',
-                                fontSize: '1.2rem',
-                                fontWeight: 'bold',
-                                padding: '12px 24px',
-                                border: '2px solid #B8860B',
-                                borderRadius: '4px',
-                                transition: 'all 0.3s ease',
-                                ':hover': {
-                                    backgroundColor: '#B8860B',
-                                    color: '#1A1A1A',
-                                },
-                            }}
                         >
                             Visit our Honeyfund
-                        </a>
+                        </HoneyfundLink>
                     </Box>
 
                     {/* Honeyfund Widget - Uncomment and replace with actual widget code when available */}
