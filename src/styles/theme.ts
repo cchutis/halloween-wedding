@@ -19,34 +19,37 @@ export const theme = createTheme({
         h1: {
             fontFamily: 'Estonia',
             fontWeight: 400,
-            fontSize: '5rem',
-            textShadow: '2px 2px 3px rgba(184, 134, 11, 0.3)', // Subtle gold shadow
+            fontSize: '6rem',
         },
         h2: {
             fontFamily: 'Estonia',
             fontWeight: 400,
-            fontSize: '4rem',
-            textShadow: '1px 1px 2px rgba(205, 127, 50, 0.3)', // Subtle bronze shadow
+            fontSize: '3.75rem',
         },
         h3: {
             fontFamily: 'Estonia',
             fontWeight: 400,
-            fontSize: '3.5rem',
+            fontSize: '3rem',
         },
         h4: {
             fontFamily: 'Estonia',
             fontWeight: 400,
-            fontSize: '3rem',
+            fontSize: '2.125rem',
         },
         h5: {
             fontFamily: 'Estonia',
             fontWeight: 400,
-            fontSize: '2.5rem',
-        },
-        h6: {
-            fontFamily: 'Estonia',
-            fontWeight: 400,
             fontSize: '2rem',
+        },
+        body1: {
+            fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: '1.1rem',
+        },
+        body2: {
+            fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+            fontWeight: 400,
+            fontSize: '1.1rem',
         },
     },
 })
