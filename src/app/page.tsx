@@ -90,7 +90,7 @@ const HoneyfundLink = styled.a`
 const GoldText = styled((props: any) => <Typography component="h1" {...props} />)`
     color: #b8860b;
     padding-bottom: 1rem;
-    
+
     @media (max-width: 768px) {
         font-size: 2rem !important;
     }
@@ -381,8 +381,8 @@ export default function Home() {
                             .
                         </Typography>
                         <Typography paragraph sx={{ color: 'white' }}>
-                            Our celebration begins at 6:30 PM, with a candlelit outdoor ceremony at 7 PM (weather permitting). Afterward, enjoy a cocktail hour that flows between the gardens and manor, blending indoor and outdoor enchantment before heading inside for an elegant reception in the
-                            grand ballroom. The night will be filled with dinner, dancing, and all the magic you&apos;d expect from a masquerade wedding on All Hallows&apos; Eve.
+                            Our celebration begins at 6:30 PM, with a outdoor ceremony at 7 PM (weather permitting). Afterward, enjoy a cocktail hour that flows between the gardens and manor, blending indoor and outdoor enchantment before heading inside for an elegant reception in the grand
+                            ballroom. The night will be filled with dinner, dancing, and all the magic you&apos;d expect from a masquerade wedding on All Hallows&apos; Eve.
                         </Typography>
                     </VideoContent>
                 </VideoSection>
