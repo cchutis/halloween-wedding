@@ -17,6 +17,10 @@ const Section = styled.section`
     position: relative;
     overflow-y: auto;
 
+    @media (max-width: 768px) {
+        padding: 4rem 0;
+    }
+
     &::-webkit-scrollbar {
         width: 8px;
     }
@@ -86,6 +90,10 @@ const HoneyfundLink = styled.a`
 const GoldText = styled((props: any) => <Typography component="h1" {...props} />)`
     color: #b8860b;
     padding-bottom: 1rem;
+    
+    @media (max-width: 768px) {
+        font-size: 2rem !important;
+    }
 `
 
 const ContactSection = styled(Box)`
@@ -117,6 +125,11 @@ const ContactForm = styled.form`
     background-color: rgba(0, 0, 0, 0.7);
     padding: 2rem;
     border-radius: 8px;
+
+    @media (max-width: 768px) {
+        padding: 1rem;
+        margin: 0 1rem;
+    }
 `
 
 const StyledInput = styled.input`
@@ -126,6 +139,10 @@ const StyledInput = styled.input`
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     font-size: 1rem;
+
+    @media (max-width: 768px) {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
 
     &::placeholder {
         color: rgba(255, 255, 255, 0.7);
@@ -279,6 +296,10 @@ const ImageContent = styled(Container)`
     justify-content: center;
     max-width: 1200px;
     margin: 0 auto;
+
+    @media (max-width: 768px) {
+        padding: 1rem;
+    }
 `
 
 export default function Home() {
@@ -308,10 +329,11 @@ export default function Home() {
                 <ImageSection id="about" style={{ backgroundImage: `url('/candle.jpg')`, backgroundPosition: 'top' }}>
                     <ImageOverlay />
                     <ImageContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, maxWidth: '1200px', margin: '0 auto' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4, maxWidth: '1200px', margin: '0 auto', flexDirection: { xs: 'column', md: 'row' } }}>
                             <Box
                                 sx={{
-                                    flex: '0 0 400px',
+                                    flex: { xs: '1 1 auto', md: '0 0 400px' },
+                                    width: { xs: '100%', md: 'auto' },
                                     backgroundColor: 'rgba(0,0,0,0.6)',
                                     padding: 2,
                                     borderRadius: 2,
@@ -384,7 +406,7 @@ export default function Home() {
                         <Typography variant="body1" sx={{ mb: 4, color: 'white' }}>
                             For your convenience, we&apos;ve compiled a list of nearby hotels to ensure a comfortable stay during our Halloween night wedding at Westbury Manor. While we haven&apos;t reserved room blocks, these accommodations are in close proximity to our venue:
                         </Typography>
-                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4 }}>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: 2, md: 4 } }}>
                             {/* Hotel Cards */}
                             <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
@@ -528,8 +550,8 @@ export default function Home() {
 
                         {/* Introduction */}
                         <Typography variant="body1" paragraph sx={{ mb: 4, color: 'white' }}>
-                            A <strong>masquerade wedding on Halloween night</strong>—what could be more magical? We&apos;re embracing the elegance and mystery of <strong>Venetian-style masquerade balls</strong>, where masks add an air of intrigue, sophistication, and celebration. Whether you choose
-                            something classic, ornate, or a little spooky, your mask will be a stunning part of the night&apos;s atmosphere.
+                            A <strong>masquerade wedding on Halloween night</strong>—what could be more magical? We’re embracing the elegance and mystery of <strong>Venetian-style masquerade balls</strong>, where masks add an air of intrigue, sophistication, and celebration. Whether you choose
+                            something classic, ornate, or a little spooky, your mask will be a stunning part of the night’s atmosphere.
                         </Typography>
 
                         {/* History Section */}
@@ -537,11 +559,11 @@ export default function Home() {
                             A Brief History of Masquerades
                         </Typography>
                         <Typography variant="body1" paragraph sx={{ mb: 4, color: 'white' }}>
-                            Masquerade balls date back to the <strong>15th and 16th centuries</strong> in Italy, particularly in <strong>Venice</strong>, where they were a highlight of the famous <strong>Carnival of Venice</strong>. These grand celebrations allowed guests to wear elaborate masks,
-                            blurring social lines and encouraging a night of revelry, dance, and elegance. Over time, masquerades became symbols of <strong>romance, mystery, and opulence</strong>, eventually spreading across Europe and influencing celebrations worldwide.
+                            Masquerade balls began in the <strong>15th-century Venice</strong>, where elaborate masks allowed guests to revel in anonymity and grandeur. Over time, they became symbols of <strong>romance, mystery, and opulence</strong>, spreading across Europe and influencing
+                            celebrations worldwide.
                         </Typography>
                         <Typography variant="body1" paragraph sx={{ mb: 4, color: 'white' }}>
-                            On <strong>Halloween night</strong>, masks take on an even more enchanting role—blending the theatrical beauty of the masquerade with the playful and mysterious spirit of the season.
+                            On <strong>Halloween night</strong>, masks blend theatrical beauty with the playful, mysterious spirit of the season.
                         </Typography>
 
                         {/* Mask Ideas Section */}
@@ -549,66 +571,84 @@ export default function Home() {
                             Mask Ideas & Inspiration
                         </Typography>
                         <Typography variant="body1" paragraph sx={{ color: 'white' }}>
-                            Your mask is an opportunity to <strong>express your personal style</strong> while embracing the theme. Here are a few ideas to get you started:
+                            Your mask is an opportunity to <strong>express your personal style</strong> while embracing the theme. Here are a few ideas:
                         </Typography>
+
                         <Box component="ul" sx={{ mb: 4, pl: 4, color: 'white' }}>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <strong>Classic Venetian Masks</strong> – Inspired by traditional Italian masquerades, these feature intricate designs, feathers, and metallic accents.
+                                <strong>Classic Venetian Masks</strong> – Intricate, timeless, and adorned with metallic accents.
+                                <a href="https://www.etsy.com/search?q=venetian+masquerade+mask" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    {' '}
+                                    [View Examples]{' '}
+                                </a>
                             </Typography>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <strong>Filigree Metal Masks</strong> – Elegant and lightweight, these lace-like metal masks add a regal touch.
+                                <strong>Filigree Metal Masks</strong> – Delicate, lace-like designs with a regal touch.
+                                <a href="https://www.masqueradestore.com/collections/women-lace-masks" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    {' '}
+                                    [View Examples]{' '}
+                                </a>
                             </Typography>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <strong>Feathered & Plumed Masks</strong> – Dramatic and bold, perfect for those who love a flair for the extravagant.
+                                <strong>Feathered & Plumed Masks</strong> – Bold and dramatic for a statement look.
+                                <a href="https://www.simplymasquerade.co.uk/masqueradeshop/cat_50367-Feather-Masks.html" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    {' '}
+                                    [View Examples]{' '}
+                                </a>
                             </Typography>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <strong>Phantom of the Opera Half Masks</strong> – A minimal yet mysterious option for a sleek, refined look.
+                                <strong>Dark Gothic Masks</strong> – Skulls, ravens, or baroque-inspired designs for a hauntingly beautiful effect.
+                                <a href="https://www.etsy.com/search?q=gothic+masquerade+mask" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    {' '}
+                                    [View Examples]{' '}
+                                </a>
                             </Typography>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <strong>Gothic or Dark Fantasy Masks</strong> – Think skulls, ravens, or baroque-inspired dark designs—a perfect fit for a Halloween masquerade.
-                            </Typography>
-                            <Typography component="li" sx={{ mb: 1 }}>
-                                <strong>Minimalist Masquerade Masks</strong> – Simple eye masks in classic black, gold, or silver can be effortlessly stylish.
+                                <strong>Minimalist Eye Masks</strong> – Sleek black, gold, or silver for effortless elegance.
+                                <a href="https://www.masqueradestore.com/simple-eye-masks" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    {' '}
+                                    [View Examples]{' '}
+                                </a>
                             </Typography>
                         </Box>
 
                         <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2, mb: 4 }}>
                             <Typography variant="body1" sx={{ fontStyle: 'italic', color: 'white' }}>
-                                <strong>Tip:</strong> If you&apos;re going for comfort, choose a mask that secures with ribbons or elastic rather than a stick-held design. Some masks even come on glasses frames for maximum comfort all night long!
+                                <strong>Tip:</strong> For comfort, opt for a mask that secures with ribbons or elastic rather than a stick-held design. Some even come on glasses frames for all-night wearability!
                             </Typography>
                         </Box>
 
                         {/* Where to Find Section */}
                         <Typography variant="h4" component="h3" sx={{ color: '#D4AF37', mb: 2 }}>
-                            Where to Find a Mask
+                            Where to Find a High-Quality Mask
                         </Typography>
                         <Typography variant="body1" paragraph sx={{ color: 'white' }}>
-                            Not sure where to look? Here are some great places to find high-quality masquerade masks:
+                            Skip the Mardi Gras styles—here’s where to find elegant, high-quality masks:
                         </Typography>
                         <Box component="ul" sx={{ mb: 4, pl: 4, color: 'white' }}>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <a href="https://www.etsy.com/search?q=masquerade+mask" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                <a href="https://www.etsy.com/search?q=masquerade+mask" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
                                     Etsy
                                 </a>{' '}
                                 – Handmade, customizable, and unique.
                             </Typography>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <a href="https://www.masqueradestore.com/" style={{ color: '#D4AF37', textDecoration: 'none' }}>
-                                    Masquerade Store
+                                <a href="https://www.venetianmasksociety.com/" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    The Venetian Mask Society
                                 </a>{' '}
-                                – A variety of Venetian, lace, and themed masks.
+                                – Authentic Venetian masks crafted in Italy.
                             </Typography>
                             <Typography component="li" sx={{ mb: 1 }}>
-                                <a href="https://www.amazon.com/s?k=masquerade+mask" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                <a href="https://www.simplymasquerade.co.uk/" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
+                                    Simply Masquerade
+                                </a>{' '}
+                                – Luxury filigree and hand-painted designs.
+                            </Typography>
+                            <Typography component="li" sx={{ mb: 1 }}>
+                                <a href="https://www.amazon.com/s?k=masquerade+mask" target="_blank" style={{ color: '#D4AF37', textDecoration: 'none' }}>
                                     Amazon
                                 </a>{' '}
-                                – Quick and easy options with fast shipping.
-                            </Typography>
-                            <Typography component="li" sx={{ mb: 1 }}>
-                                <a href="https://www.spirithalloween.com/" style={{ color: '#D4AF37', textDecoration: 'none' }}>
-                                    Costume Shops
-                                </a>{' '}
-                                – Spirit Halloween and local costume shops often have masks this time of year.
+                                – A mix of quality and convenience with fast shipping.
                             </Typography>
                         </Box>
 
@@ -618,13 +658,13 @@ export default function Home() {
                                 Best Mask Contest
                             </Typography>
                             <Typography variant="body1" sx={{ color: 'white' }}>
-                                To add to the fun, we&apos;ll be hosting a <strong>&quot;Best Mask&quot; contest</strong> during the reception! Show off your creativity and craftsmanship for a chance to win a special prize. Whether you purchase a mask or craft one yourself, we&apos;re excited to see
-                                the unique designs our guests bring to the celebration.
+                                To add to the fun, we’ll be hosting a <strong>&quot;Best Mask&quot; contest</strong> during the reception! Show off your creativity and craftsmanship for a chance to win a special prize. Whether you purchase a mask or craft one yourself, we’re excited to see the
+                                unique designs our guests bring to the celebration.
                             </Typography>
                         </Box>
 
                         <Typography variant="body1" paragraph sx={{ fontStyle: 'italic', textAlign: 'center', color: 'white' }}>
-                            We can&apos;t wait to see everyone in their masquerade best—whether it&apos;s dramatic and bold or sleek and mysterious. The only rule? <strong>Have fun with it!</strong>
+                            We can’t wait to see everyone in their masquerade best—whether it’s dramatic and bold or sleek and mysterious. The only rule? <strong>Have fun with it!</strong>
                         </Typography>
                     </ImageContent>
                 </ImageSection>

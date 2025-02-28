@@ -1,6 +1,8 @@
-import { AppBar, Toolbar, Button, Box } from '@mui/material'
+import { AppBar, Toolbar, Button, Box, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText } from '@mui/material'
 import styled from 'styled-components'
 import Image from 'next/image'
+import { useState } from 'react'
+import MenuIcon from '@mui/icons-material/Menu'
 
 const StyledAppBar = styled(AppBar)`
     background: rgba(26, 26, 26, 0.95);
@@ -20,6 +22,20 @@ const NavButton = styled(Button)`
     &:hover {
         color: #cd7f32;
     }
+
+    @media (max-width: 1024px) {
+        display: none;
+    }
+`
+
+const MobileMenuButton = styled(IconButton)`
+    color: #b8860b;
+    display: none;
+    margin-left: auto;
+
+    @media (max-width: 1024px) {
+        display: flex;
+    }
 `
 
 const LogoContainer = styled.div`
@@ -31,11 +47,42 @@ const LogoContainer = styled.div`
     margin-right: 16px;
 `
 
+const StyledDrawer = styled(Drawer)`
+    .MuiDrawer-paper {
+        background: rgba(26, 26, 26, 0.95);
+        backdrop-filter: blur(5px);
+        width: 240px;
+    }
+`
+
+const DrawerListItem = styled(ListItemButton)`
+    color: #b8860b !important;
+    
+    &:hover {
+        color: #cd7f32 !important;
+        background-color: rgba(205, 127, 50, 0.1) !important;
+    }
+`
+
 const Navigation = () => {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
     const scrollToSection = (id: string) => {
         const element = document.getElementById(id)
         element?.scrollIntoView({ behavior: 'smooth' })
+        setMobileMenuOpen(false)
     }
+
+    const menuItems = [
+        { id: 'hero', label: 'Home' },
+        { id: 'about', label: 'Our Story' },
+        { id: 'when-where', label: 'When & Where' },
+        { id: 'hotels', label: 'Hotels' },
+        { id: 'masquerade', label: 'Masquerade' },
+        { id: 'song-requests', label: 'Request a Song' },
+        { id: 'honeyfund', label: 'Registry' },
+        { id: 'contact', label: 'Contact Us' },
+    ]
 
     return (
         <StyledAppBar position="fixed">
@@ -54,18 +101,37 @@ const Navigation = () => {
                         <Image src="/logo.png" alt="Logo" width={60} height={60} style={{ objectFit: 'contain' }} priority />
                     </LogoContainer>
                     <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        <NavButton onClick={() => scrollToSection('hero')}>Home</NavButton>
-                        <NavButton onClick={() => scrollToSection('about')}>Our Story</NavButton>
-                        <NavButton onClick={() => scrollToSection('when-where')}>When & Where</NavButton>
-                        <NavButton onClick={() => scrollToSection('hotels')}>Hotels</NavButton>
-                        <NavButton onClick={() => scrollToSection('masquerade')}>Masquerade</NavButton>
-                        {/* <NavButton onClick={() => scrollToSection('wedding-party')}>Wedding Party</NavButton> */}
-                        <NavButton onClick={() => scrollToSection('song-requests')}>Request a Song</NavButton>
-                        <NavButton onClick={() => scrollToSection('honeyfund')}>Registry</NavButton>
-                        <NavButton onClick={() => scrollToSection('contact')}>Contact Us</NavButton>
+                        {menuItems.map((item) => (
+                            <NavButton key={item.id} onClick={() => scrollToSection(item.id)}>
+                                {item.label}
+                            </NavButton>
+                        ))}
                     </Box>
+                    <MobileMenuButton
+                        edge="end"
+                        onClick={() => setMobileMenuOpen(true)}
+                        aria-label="menu"
+                    >
+                        <MenuIcon />
+                    </MobileMenuButton>
                 </Box>
             </StyledToolbar>
+
+            <StyledDrawer
+                anchor="right"
+                open={mobileMenuOpen}
+                onClose={() => setMobileMenuOpen(false)}
+            >
+                <List>
+                    {menuItems.map((item) => (
+                        <ListItem key={item.id} disablePadding>
+                            <DrawerListItem onClick={() => scrollToSection(item.id)}>
+                                <ListItemText primary={item.label} />
+                            </DrawerListItem>
+                        </ListItem>
+                    ))}
+                </List>
+            </StyledDrawer>
         </StyledAppBar>
     )
 }
