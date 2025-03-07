@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { theme } from '../styles/theme'
 import { createGlobalStyle } from 'styled-components'
+import StyledComponentsRegistry from './registry'
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Estonia&display=swap');
@@ -43,11 +44,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <meta name="description" content="Join us for our Halloween Masquerade Wedding Celebration" />
             </head>
             <body>
-                <ThemeProvider theme={theme}>
-                    <CssBaseline />
-                    <GlobalStyle />
-                    {children}
-                </ThemeProvider>
+                <StyledComponentsRegistry>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        <GlobalStyle />
+                        {children}
+                    </ThemeProvider>
+                </StyledComponentsRegistry>
             </body>
         </html>
     )
