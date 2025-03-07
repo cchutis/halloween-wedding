@@ -10,15 +10,15 @@ import Image from 'next/image'
 const Section = styled.section`
     min-height: 100vh;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
-    padding: 8rem 0;
+    padding: 8rem 2rem;
     scroll-snap-align: start;
     position: relative;
     overflow-y: auto;
 
     @media (max-width: 768px) {
-        padding: 4rem 0;
+        padding: 4rem 1rem;
     }
 
     &::-webkit-scrollbar {
@@ -230,7 +230,6 @@ const VideoSection = styled(Section)`
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
 
     video {
         position: absolute;
@@ -239,7 +238,6 @@ const VideoSection = styled(Section)`
         width: 100%;
         height: 100%;
         object-fit: cover;
-        opacity: 0.4;
     }
 `
 
@@ -255,13 +253,12 @@ const SectionVideoOverlay = styled.div`
 
 const VideoContent = styled(Container)`
     position: relative;
-    z-index: 3;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: 100vh;
-    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
 `
 
 const ImageSection = styled(Section)`
