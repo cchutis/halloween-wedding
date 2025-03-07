@@ -745,7 +745,7 @@ export default function Home() {
                         </Typography>
 
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                            <HoneyfundLink href="https://www.honeyfund.com/wedding/chutis-shalhoub-10-31-2025" target="_blank" rel="noopener noreferrer">
+                            <HoneyfundLink href="https://www.honeyfund.com/site/chutis-o-malley-10-31-2025" target="_blank" rel="noopener noreferrer">
                                 Visit our Registry
                             </HoneyfundLink>
                         </Box>
