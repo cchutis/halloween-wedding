@@ -699,7 +699,7 @@ export default function Home() {
                                     5. We will pick some songs to play during the reception
                                 </Typography>
                                 <a
-                                    href="https://open.spotify.com/playlist/7kgTGs1bijkEt0RsOpoYr0?si=adb8a8c428cf469b&pt=8832f8a853e68cf32008db7d44f845b7"
+                                    href="https://open.spotify.com/playlist/7kgTGs1bijkEt0RsOpoYr0?si=74059217afea4bf4&pt=f5a3c90a05f6a78618182f3481f88237"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
