@@ -340,7 +340,7 @@ export default function Home() {
                             </Box>
                             <Box sx={{ flex: 1 }}>
                                 <GoldText variant="h2" gutterBottom>
-                                    Our Story
+                                    Our Wedding
                                 </GoldText>
                                 <Typography paragraph sx={{ color: 'white' }}>
                                     We&apos;re so excited to celebrate our wedding with all of you on October 31, 2025—a night of love, laughter, and a little bit of mystery.
@@ -649,7 +649,7 @@ export default function Home() {
                             </Typography>
                         </Box>
 
-                        {/* Contest Section */}
+                        {/* Contest Section
                         <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2, mb: 4 }}>
                             <Typography variant="h4" component="h3" sx={{ color: '#D4AF37', mb: 2 }}>
                                 Best Mask Contest
@@ -658,7 +658,7 @@ export default function Home() {
                                 To add to the fun, we’ll be hosting a <strong>&quot;Best Mask&quot; contest</strong> during the reception! Show off your creativity and craftsmanship for a chance to win a special prize. Whether you purchase a mask or craft one yourself, we’re excited to see the
                                 unique designs our guests bring to the celebration.
                             </Typography>
-                        </Box>
+                        </Box> */}
 
                         <Typography variant="body1" paragraph sx={{ fontStyle: 'italic', textAlign: 'center', color: 'white' }}>
                             We can’t wait to see everyone in their masquerade best—whether it’s dramatic and bold or sleek and mysterious. The only rule? <strong>Have fun with it!</strong>
