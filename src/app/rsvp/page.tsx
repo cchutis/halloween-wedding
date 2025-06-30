@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { Box, Container, Typography, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Button, Alert, CircularProgress } from '@mui/material'
 import styled from 'styled-components'
 import Navigation from '../../components/Navigation'
@@ -176,7 +176,7 @@ interface GuestInfo {
     songRequest: string
 }
 
-export default function RsvpPage() {
+function RsvpContent() {
     const searchParams = useSearchParams()
     const code = searchParams.get('code')
 
@@ -371,5 +371,32 @@ export default function RsvpPage() {
                 </Container>
             </Footer>
         </PageWrapper>
+    )
+}
+
+export default function RsvpPage() {
+    return (
+        <Suspense fallback={
+            <PageWrapper>
+                <Navigation />
+                <Section>
+                    <ImageOverlay />
+                    <ContentContainer>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+                            <CircularProgress sx={{ color: '#b8860b' }} />
+                        </Box>
+                    </ContentContainer>
+                </Section>
+                <Footer>
+                    <Container>
+                        <Typography variant="body2" sx={{ color: '#666' }}>
+                            &copy; 2024 Constantine & Lauren. All rights reserved.
+                        </Typography>
+                    </Container>
+                </Footer>
+            </PageWrapper>
+        }>
+            <RsvpContent />
+        </Suspense>
     )
 }
