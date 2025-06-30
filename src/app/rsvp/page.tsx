@@ -195,13 +195,12 @@ function RsvpContent() {
     // Simulate code validation
     useEffect(() => {
         const validateCode = async () => {
-            // In a real app, you would validate the code against a database
-            // For now, we'll just simulate a delay and accept any code
+            // Only accept the specific code "readytomaskup"
             setIsLoading(true)
 
             setTimeout(() => {
-                // For demo purposes, any non-empty code is valid
-                setIsValidCode(!!code)
+                // Only the code "readytomaskup" is valid
+                setIsValidCode(code === 'readytomaskup')
                 setIsLoading(false)
             }, 1000)
         }
