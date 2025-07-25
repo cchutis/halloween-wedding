@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import Game from '@/components/SpaceInvaders/Game'
 import Leaderboard from '@/components/SpaceInvaders/Leaderboard'
 import ScoreSubmissionDialog from '@/components/SpaceInvaders/ScoreSubmissionDialog'
-import { Container, Typography, CircularProgress, Alert } from '@mui/material'
+import { Container, CircularProgress, Alert } from '@mui/material'
 import { getTopScores, submitScore, LeaderboardScore } from '@/lib/leaderboard'
 
 const GamePageContainer = styled(Container)`
@@ -18,12 +18,6 @@ const GameSection = styled.div`
     justify-content: center;
     align-items: flex-start;
     margin-top: 2rem;
-`
-
-const Title = styled(Typography)`
-    color: #b8860b;
-    text-align: center;
-    margin-bottom: 2rem;
 `
 
 export default function GamePage() {
@@ -102,7 +96,6 @@ export default function GamePage() {
 
     return (
         <GamePageContainer>
-            <Title variant="h2">👾 Wedding Invaders 👻</Title>
             {error && (
                 <Alert severity="warning" style={{ marginBottom: '1rem', backgroundColor: 'rgba(255, 193, 7, 0.1)' }}>
                     {error}

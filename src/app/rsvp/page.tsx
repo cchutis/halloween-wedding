@@ -236,7 +236,6 @@ interface GuestInfo {
     hasDietaryRestrictions: string
     dietaryRestrictions: string
     songRequest: string
-    memory: string
 }
 
 function RsvpContent() {
@@ -258,7 +257,6 @@ function RsvpContent() {
         hasDietaryRestrictions: '',
         dietaryRestrictions: '',
         songRequest: '',
-        memory: '',
     })
 
     // Simulate code validation
@@ -382,7 +380,7 @@ function RsvpContent() {
         e.preventDefault()
 
         // Validate required fields
-        if (!formData.name || !formData.email || !formData.attending || !formData.hasDietaryRestrictions) {
+        if (formData.attending === 'yes' && (!formData.name || !formData.email || !formData.attending || !formData.hasDietaryRestrictions)) {
             alert('Please fill in all required fields')
             return
         }
@@ -422,7 +420,6 @@ function RsvpContent() {
                 additionalGuests: formData.additionalGuests,
                 dietaryRestrictions: formData.dietaryRestrictions || 'None',
                 songRequest: formData.songRequest || 'None',
-                memory: formData.memory || 'None',
                 timestamp: new Date().toISOString(),
                 code: code || 'Unknown',
             }
@@ -431,7 +428,7 @@ function RsvpContent() {
 
             // Add your Google Apps Script Web App URL here
             // It should look like: https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
-            const sheetsApiUrl = 'https://script.google.com/macros/s/AKfycbzN7YzdKWtPqs2vMKDwBXm4YWHG11EGaAhs5n2SKIFLxJQOvE1Yo12EbujCAk79EzSxCQ/exec'
+            const sheetsApiUrl = 'https://script.google.com/macros/s/AKfycbwADl2BrLLQ8vbRAbWcO7evsFIuWC1KUJfHTYZdufwYT99xihDU9cLSzPEbk44JxnU3ng/exec'
 
             // Submit the data to Google Sheets via Apps Script
             await fetch(sheetsApiUrl, {
@@ -656,16 +653,6 @@ function RsvpContent() {
                                 </Typography>
                                 <StyledTextField name="songRequest" value={formData.songRequest} onChange={handleChange} placeholder="What song will get you on the dance floor?" fullWidth variant="outlined" />
                             </Box>
-
-                            {/* <Box>
-                                <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
-                                    Share a Memory
-                                </Typography>
-                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2, fontSize: '0.875rem' }}>
-                                    We&apos;d love to hear a favorite memory you have with us! Whether it&apos;s a funny story, a special moment, or just something that makes you smile when you think of us.
-                                </Typography>
-                                <StyledTextField name="memory" value={formData.memory} onChange={handleChange} placeholder="Share a special memory or message..." multiline rows={3} fullWidth variant="outlined" />
-                            </Box> */}
                         </>
                     )}
 

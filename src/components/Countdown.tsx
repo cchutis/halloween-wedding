@@ -9,7 +9,7 @@ const CountdownContainer = styled(Box)`
     padding-top: 2rem;
     margin-top: 1rem;
     position: relative;
-    
+
     @media (max-width: 768px) {
         gap: 1.5rem;
         padding: 0;
@@ -20,7 +20,7 @@ const TimeUnit = styled(Box)`
     text-align: center;
     min-width: 80px;
     position: relative;
-    
+
     &:not(:last-child)::after {
         content: ':';
         position: absolute;
@@ -30,14 +30,15 @@ const TimeUnit = styled(Box)`
         font-size: 3rem;
         line-height: 1;
         font-weight: 300;
-        
+        margin-top: 24px;
+
         @media (max-width: 768px) {
             right: -1rem;
             font-size: 1.5rem;
             top: 0.2rem;
         }
     }
-    
+
     @media (max-width: 768px) {
         min-width: 60px;
     }
@@ -51,7 +52,7 @@ const TimeNumber = styled(Typography)`
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     font-weight: 500;
     line-height: 1;
-    
+
     @media (max-width: 768px) {
         font-size: 2.5rem !important;
     }
@@ -66,7 +67,7 @@ const TimeLabel = styled(Typography)`
     background-color: rgba(184, 134, 11, 0.2);
     padding: 0.3rem 0.5rem;
     border-radius: 4px;
-    
+
     @media (max-width: 768px) {
         font-size: 0.7rem;
         padding: 0.2rem 0.4rem;

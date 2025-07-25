@@ -134,7 +134,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
         powerTimer: 0,
         shielded: false,
         dying: false,
-        deathTimer: 0
+        deathTimer: 0,
     })
 
     const [enemies, setEnemies] = useState<Enemy[]>(() => {
@@ -645,12 +645,12 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                                     lives: 0,
                                     score: Math.max(0, p.score - 50),
                                     dying: true,
-                                    deathTimer: 60 // Animation frames
+                                    deathTimer: 60, // Animation frames
                                 }))
-                                
+
                                 // Create explosion at player position
                                 handleExplosion(player.x + player.width / 2, player.y + player.height / 2)
-                                
+
                                 // Delay game over to show death animation
                                 setTimeout(() => {
                                     setGameState('gameOver')
@@ -824,7 +824,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
 
         ctx.fillStyle = '#000'
         ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
-        
+
         // Draw stars with slow movement for all game states
         const now = Date.now()
 
@@ -845,7 +845,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
             ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
             ctx.fill()
         }
-        
+
         if (gameState === 'title') {
             // Draw spooky background elements
 
@@ -875,7 +875,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
             // }
 
             // Draw title with glow effect
-            const title = 'HALLOWEEN SPACE INVADERS'
+            const title = 'WEDDING INVADERS'
 
             // Draw shadow/glow
             ctx.fillStyle = '#ff6600'
@@ -1113,43 +1113,41 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
         // Draw player with color based on power-up state or death animation
         if (player.dying) {
             // Death animation - draw explosion particles
-            player.deathTimer--;
-            
+            player.deathTimer--
+
             // Calculate fade factor (1.0 to 0.0) as animation progresses
-            const fadeFactor = Math.max(0, player.deathTimer / 60);
-            
+            const fadeFactor = Math.max(0, player.deathTimer / 60)
+
             // Limit the maximum radius to prevent it from taking over the screen
             // Max radius of 40 pixels that fades out
-            const maxRadius = 40;
-            const radius = maxRadius * Math.min(1, (60 - player.deathTimer) / 30) * fadeFactor;
-            
+            const maxRadius = 40
+            const radius = maxRadius * Math.min(1, (60 - player.deathTimer) / 30) * fadeFactor
+
             // Only draw if we still have a visible explosion
             if (fadeFactor > 0.1) {
                 // Create multiple explosion particles
-                const particleCount = 12;
-                
+                const particleCount = 12
+
                 for (let i = 0; i < particleCount; i++) {
-                    const angle = (i / particleCount) * Math.PI * 2;
-                    const distance = radius * (0.5 + Math.random() * 0.5);
-                    const x = player.x + PLAYER_WIDTH / 2 + Math.cos(angle) * distance;
-                    const y = player.y + PLAYER_HEIGHT / 2 + Math.sin(angle) * distance;
-                    
+                    const angle = (i / particleCount) * Math.PI * 2
+                    const distance = radius * (0.5 + Math.random() * 0.5)
+                    const x = player.x + PLAYER_WIDTH / 2 + Math.cos(angle) * distance
+                    const y = player.y + PLAYER_HEIGHT / 2 + Math.sin(angle) * distance
+
                     // Alternate colors for explosion with opacity based on fade factor
-                    const color = i % 2 === 0 ? 
-                        `rgba(255, 85, 0, ${fadeFactor})` : 
-                        `rgba(255, 221, 0, ${fadeFactor})`;
-                    
-                    ctx.fillStyle = color;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 3 + Math.random() * 3, 0, Math.PI * 2);
-                    ctx.fill();
+                    const color = i % 2 === 0 ? `rgba(255, 85, 0, ${fadeFactor})` : `rgba(255, 221, 0, ${fadeFactor})`
+
+                    ctx.fillStyle = color
+                    ctx.beginPath()
+                    ctx.arc(x, y, 3 + Math.random() * 3, 0, Math.PI * 2)
+                    ctx.fill()
                 }
-                
+
                 // Draw center of explosion (orange instead of white/grey)
-                ctx.fillStyle = `rgba(255, 140, 0, ${fadeFactor})`;
-                ctx.beginPath();
-                ctx.arc(player.x + PLAYER_WIDTH / 2, player.y + PLAYER_HEIGHT / 2, radius / 3, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillStyle = `rgba(255, 140, 0, ${fadeFactor})`
+                ctx.beginPath()
+                ctx.arc(player.x + PLAYER_WIDTH / 2, player.y + PLAYER_HEIGHT / 2, radius / 3, 0, Math.PI * 2)
+                ctx.fill()
             }
         } else {
             // Normal player ship
@@ -1220,10 +1218,10 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
 
             // Orange explosion particles instead of green
             ctx.fillStyle = `rgba(255, 140, 0, ${1 - progress})`
-            
+
             // Draw circular explosion instead of rectangle
             ctx.beginPath()
-            ctx.arc(explosion.x, explosion.y, explosion.width / 2 * (1 - progress * 0.5), 0, Math.PI * 2)
+            ctx.arc(explosion.x, explosion.y, (explosion.width / 2) * (1 - progress * 0.5), 0, Math.PI * 2)
             ctx.fill()
         })
 
@@ -1338,7 +1336,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
             powerTimer: 0,
             shielded: false,
             dying: false,
-            deathTimer: 0
+            deathTimer: 0,
         })
 
         // Initialize new barricades
@@ -1457,7 +1455,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                 shielded: false,
                 powerTimer: 0,
                 dying: false,
-                deathTimer: 0
+                deathTimer: 0,
             })
             setEnemies([])
             setBullets([])

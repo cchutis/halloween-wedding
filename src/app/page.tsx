@@ -151,6 +151,11 @@ const ContactForm = styled.form`
     }
 `
 
+const AlertContainer = styled.div`
+    margin-top: 1rem;
+    width: 100%;
+`
+
 const StyledInput = styled.input`
     padding: 0.8rem;
     border-radius: 4px;
@@ -454,31 +459,10 @@ const HighScoreDisplay = () => {
         fetchTopScore()
     }, [])
 
-    if (loading) {
-        return (
-            <HighScoreCard>
-                <CircularProgress size={24} style={{ color: '#b8860b' }} />
-                <Typography variant="body2" sx={{ mt: 1, color: '#b8860b' }}>
-                    Loading top score...
-                </Typography>
-            </HighScoreCard>
-        )
-    }
-
-    if (error && !topScore) {
-        return (
-            <HighScoreCard>
-                <Alert severity="warning" sx={{ backgroundColor: 'rgba(255, 193, 7, 0.1)', color: '#b8860b' }}>
-                    {error}
-                </Alert>
-            </HighScoreCard>
-        )
-    }
-
     return (
         <HighScoreCard>
             <HighScoreTitle>👑 Current Champion 👑</HighScoreTitle>
-            <HighScoreName>{topScore?.name}</HighScoreName>
+            {loading ? <CircularProgress size={24} sx={{ color: '#b8860b' }} /> : error ? <Typography color="error">{error}</Typography> : topScore ? <HighScoreName>{topScore.name}</HighScoreName> : <Typography color="#fff">No scores yet</Typography>}
             <HighScoreValue>
                 {topScore?.score.toLocaleString()} <span style={{ color: '#fff', fontSize: '0.8rem' }}>points</span>
             </HighScoreValue>
@@ -487,6 +471,70 @@ const HighScoreDisplay = () => {
 }
 
 export default function Home() {
+    const [showHotels, setShowHotels] = useState(false)
+    const [contactForm, setContactForm] = useState({
+        name: '',
+        email: '',
+        message: '',
+    })
+    const [formStatus, setFormStatus] = useState({
+        show: false,
+        type: 'success' as 'success' | 'error' | 'info',
+        message: '',
+    })
+
+    const handleContactChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target
+        setContactForm((prev) => ({
+            ...prev,
+            [name]: value,
+        }))
+    }
+
+    const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+
+        try {
+            // Create email content from form data
+            const subject = encodeURIComponent('Wedding Website Contact Form')
+            const body = encodeURIComponent(`Name: ${contactForm.name}\n\n` + `Email: ${contactForm.email}\n\n` + `Message:\n${contactForm.message}\n\n` + `Sent from: Wedding Website Contact Form`)
+
+            // Email address to send to
+            const emailTo = 'constantinec84@gmail.com' // Replace with your preferred email
+
+            // Create mailto link
+            const mailtoLink = `mailto:${emailTo}?subject=${subject}&body=${body}`
+
+            // Open email client
+            window.location.href = mailtoLink
+
+            // Reset form
+            setContactForm({
+                name: '',
+                email: '',
+                message: '',
+            })
+
+            // Show success message
+            setFormStatus({
+                show: true,
+                type: 'success',
+                message: 'Email client opened! Please send the email from your email application.',
+            })
+
+            // Hide success message after 8 seconds
+            setTimeout(() => {
+                setFormStatus((prev) => ({ ...prev, show: false }))
+            }, 8000)
+        } catch (error) {
+            console.error('Error opening email client:', error)
+            setFormStatus({
+                show: true,
+                type: 'error',
+                message: 'Failed to open email client. Please try again or contact us directly.',
+            })
+        }
+    }
     return (
         <PageWrapper>
             <Box>
@@ -596,16 +644,18 @@ export default function Home() {
                                     margin: { xs: '0 auto', md: 0 },
                                 }}
                             >
-                                <img
-                                    src="./couple.jpg"
+                                <Image
+                                    src="/couple.jpg"
                                     alt="Constantine and Lauren"
+                                    width={800}
+                                    height={600}
                                     style={{
                                         width: '100%',
                                         height: 'auto',
-                                        borderRadius: 2,
-                                        maxHeight: '400px',
                                         objectFit: 'cover',
+                                        borderRadius: 8,
                                     }}
+                                    priority
                                 />
                             </Box>
                             <Box
@@ -666,9 +716,7 @@ export default function Home() {
                 </ImageSection>
 
                 <VideoSection id="when-where">
-                    <video autoPlay muted loop playsInline>
-                        <source src="https://www.westburymanor.com/background-videos/photos/Exteriors_720.mp4" type="video/mp4" />
-                    </video>
+                    <Image src="/manor.jpg" alt="Westbury Manor" fill style={{ objectFit: 'cover' }} />
                     <SectionVideoOverlay />
                     <VideoContent>
                         <GoldText variant="h2" gutterBottom>
@@ -686,11 +734,13 @@ export default function Home() {
                         <Box
                             sx={{
                                 display: 'grid',
-                                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
-                                gap: 3,
+                                gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
+                                gap: 2,
                                 mt: 5,
                                 width: '100%',
-                                maxWidth: '1200px',
+                                maxWidth: '900px',
+                                mx: 'auto',
+                                justifyContent: 'center',
                             }}
                         >
                             <Box
@@ -699,7 +749,7 @@ export default function Home() {
                                     backdropFilter: 'blur(5px)',
                                     border: '1px solid rgba(184, 134, 11, 0.3)',
                                     borderRadius: 2,
-                                    padding: 3,
+                                    padding: 2,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
@@ -715,8 +765,8 @@ export default function Home() {
                                     sx={{
                                         backgroundColor: 'rgba(184, 134, 11, 0.2)',
                                         borderRadius: '50%',
-                                        width: 70,
-                                        height: 70,
+                                        width: 60,
+                                        height: 60,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -746,7 +796,7 @@ export default function Home() {
                                     backdropFilter: 'blur(5px)',
                                     border: '1px solid rgba(184, 134, 11, 0.3)',
                                     borderRadius: 2,
-                                    padding: 3,
+                                    padding: 2,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
@@ -762,8 +812,8 @@ export default function Home() {
                                     sx={{
                                         backgroundColor: 'rgba(184, 134, 11, 0.2)',
                                         borderRadius: '50%',
-                                        width: 70,
-                                        height: 70,
+                                        width: 60,
+                                        height: 60,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -793,7 +843,7 @@ export default function Home() {
                                     backdropFilter: 'blur(5px)',
                                     border: '1px solid rgba(184, 134, 11, 0.3)',
                                     borderRadius: 2,
-                                    padding: 3,
+                                    padding: 2,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
@@ -809,8 +859,8 @@ export default function Home() {
                                     sx={{
                                         backgroundColor: 'rgba(184, 134, 11, 0.2)',
                                         borderRadius: '50%',
-                                        width: 70,
-                                        height: 70,
+                                        width: 60,
+                                        height: 60,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -840,7 +890,7 @@ export default function Home() {
                                     backdropFilter: 'blur(5px)',
                                     border: '1px solid rgba(184, 134, 11, 0.3)',
                                     borderRadius: 2,
-                                    padding: 3,
+                                    padding: 2,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
@@ -856,8 +906,8 @@ export default function Home() {
                                     sx={{
                                         backgroundColor: 'rgba(184, 134, 11, 0.2)',
                                         borderRadius: '50%',
-                                        width: 70,
-                                        height: 70,
+                                        width: 60,
+                                        height: 60,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
@@ -897,144 +947,240 @@ export default function Home() {
                 <ImageSection id="hotels">
                     <ImageOverlay />
                     <ImageContent>
-                        <GoldText variant="h2" gutterBottom>
-                            Accommodations
-                        </GoldText>
-                        <Typography variant="body1" sx={{ mb: 4, color: 'white' }}>
-                            For your convenience, we&apos;ve compiled a list of nearby hotels to ensure a comfortable stay during our Halloween night wedding at Westbury Manor. While we haven&apos;t reserved room blocks, these accommodations are in close proximity to our venue:
-                        </Typography>
-                        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: 2, md: 4 } }}>
-                            {/* Hotel Cards */}
-                            <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                                    <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
-                                        Hilton Garden Inn (Westbury)
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-                                        <Box sx={{ width: 150, height: 150, backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0, borderRadius: 1 }}>
-                                            <Image src="/hotels/hiltongardeninnwestbury.jpg" alt="Hilton Garden Inn (Westbury)" width={150} height={150} style={{ objectFit: 'cover', borderRadius: 5 }} />
-                                        </Box>
-                                        <Typography variant="body2" paragraph>
-                                            Located approximately 0.7 miles from Westbury Manor, this hotel offers modern amenities including an indoor pool, fitness center, and on-site dining. It&apos;s within walking distance to various shops and restaurants.
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button variant="outlined" href="https://www.hilton.com/en/hotels/jfkwegi-hilton-garden-inn-westbury/" target="_blank" rel="noopener noreferrer">
-                                        Learn More
-                                    </Button>
-                                </Box>
-                            </Box>
+                        <Box
+                            sx={{
+                                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                borderRadius: '8px',
+                                padding: '2rem',
+                                width: '100%',
+                                maxWidth: '1200px',
+                                margin: '0 auto',
+                            }}
+                        >
+                            <GoldText variant="h2" gutterBottom>
+                                Accommodations
+                            </GoldText>
+                            <Typography variant="body1" sx={{ mb: 4, color: 'white' }}>
+                                For your convenience, we&apos;ve compiled a list of nearby hotels to ensure a comfortable stay during our Halloween night wedding at Westbury Manor. While we haven&apos;t reserved room blocks, these accommodations are in close proximity to our venue:
+                            </Typography>
 
-                            <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                                    <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
-                                        Courtyard by Marriott
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-                                        <Box sx={{ width: 150, height: 150, backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0, borderRadius: 1 }}>
-                                            <Image src="/hotels/courtyardmarriott.webp" alt="Courtyard by Marriott" width={150} height={150} style={{ objectFit: 'cover', borderRadius: 5 }} />
-                                        </Box>
-                                        <Typography variant="body2" paragraph>
-                                            Situated about 0.8 miles from the venue, this hotel provides contemporary rooms, an indoor pool, and a fitness center. Guests can enjoy easy access to nearby attractions and dining options.
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button variant="outlined" href="https://www.marriott.com/en-us/hotels/nycbl-courtyard-westbury-long-island-ny/" target="_blank" rel="noopener noreferrer">
-                                        Learn More
-                                    </Button>
-                                </Box>
-                            </Box>
+                            <Button
+                                variant="outlined"
+                                onClick={() => setShowHotels(!showHotels)}
+                                sx={{
+                                    mb: 3,
+                                    color: '#D4AF37',
+                                    borderColor: '#D4AF37',
+                                    '&:hover': {
+                                        borderColor: '#D4AF37',
+                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                    },
+                                }}
+                            >
+                                {showHotels ? 'Hide Accommodations' : 'Show Accommodations'}
+                            </Button>
 
-                            <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                                    <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
-                                        Viana Hotel and Spa
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-                                        <Box sx={{ width: 150, height: 150, backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0, borderRadius: 1 }}>
-                                            <Image src="/hotels/viana.png" alt="Viana Hotel and Spa" width={150} height={150} style={{ objectFit: 'cover', borderRadius: 5 }} />
+                            {showHotels && (
+                                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: 2, md: 4 } }}>
+                                    {/* Hotel Cards */}
+                                    <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                        <Box sx={{ width: '100%', height: 200, position: 'relative' }}>
+                                            <Image src="/hotels/hiltongardeninnwestbury.jpg" alt="Hilton Garden Inn (Westbury)" fill style={{ objectFit: 'cover' }} />
                                         </Box>
-                                        <Typography variant="body2" paragraph>
-                                            Approximately 1.5 miles from Westbury Manor, this boutique hotel features luxury accommodations, a full-service spa, and the Marco Polo restaurant, blending East and West cuisines.
-                                        </Typography>
+                                        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                            <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
+                                                Hilton Garden Inn (Westbury)
+                                            </Typography>
+                                            <Typography variant="body2" paragraph sx={{ mb: 3, flexGrow: 1 }}>
+                                                Located approximately 0.7 miles from Westbury Manor, this hotel offers modern amenities including an indoor pool, fitness center, and on-site dining. It&apos;s within walking distance to various shops and restaurants.
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                href="https://www.hilton.com/en/hotels/jfkwegi-hilton-garden-inn-westbury/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                fullWidth
+                                                sx={{
+                                                    mt: 'auto',
+                                                    color: '#D4AF37',
+                                                    borderColor: '#D4AF37',
+                                                    '&:hover': {
+                                                        borderColor: '#D4AF37',
+                                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                                    },
+                                                }}
+                                            >
+                                                Learn More
+                                            </Button>
+                                        </Box>
                                     </Box>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button variant="outlined" href="https://www.vianahotelandspa.com/" target="_blank" rel="noopener noreferrer">
-                                        Learn More
-                                    </Button>
-                                </Box>
-                            </Box>
 
-                            <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                                    <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
-                                        Homewood Suites by Hilton
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-                                        <Box sx={{ width: 150, height: 150, backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0, borderRadius: 1 }}>
-                                            <Image src="/hotels/homewood.png" alt="Homewood Suites by Hilton" width={150} height={150} style={{ objectFit: 'cover', borderRadius: 5 }} />
+                                    <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                        <Box sx={{ width: '100%', height: 200, position: 'relative' }}>
+                                            <Image src="/hotels/courtyardmarriott.webp" alt="Courtyard by Marriott" fill style={{ objectFit: 'cover' }} />
                                         </Box>
-                                        <Typography variant="body2" paragraph>
-                                            Located around 1.7 miles from the venue, this all-suite hotel offers extended-stay accommodations with in-room kitchens, complimentary breakfast, and an indoor pool.
-                                        </Typography>
+                                        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                            <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
+                                                Courtyard by Marriott
+                                            </Typography>
+                                            <Typography variant="body2" paragraph sx={{ mb: 3, flexGrow: 1 }}>
+                                                Located about 1.2 miles from our venue, this hotel provides a comfortable stay with modern amenities and a convenient location.
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                href="https://www.marriott.com/en-us/hotels/nycwb-courtyard-westbury-long-island/overview/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                fullWidth
+                                                sx={{
+                                                    mt: 'auto',
+                                                    color: '#D4AF37',
+                                                    borderColor: '#D4AF37',
+                                                    '&:hover': {
+                                                        borderColor: '#D4AF37',
+                                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                                    },
+                                                }}
+                                            >
+                                                Learn More
+                                            </Button>
+                                        </Box>
                                     </Box>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button variant="outlined" href="https://www.hilton.com/en/hotels/jfkcphw-homewood-suites-carle-place-garden-city-ny/" target="_blank" rel="noopener noreferrer">
-                                        Learn More
-                                    </Button>
-                                </Box>
-                            </Box>
 
-                            <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                                    <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
-                                        The Roslyn, Tapestry Collection by Hilton
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-                                        <Box sx={{ width: 150, height: 150, backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0, borderRadius: 1 }}>
-                                            <Image src="/hotels/tapestry.png" alt="The Roslyn, Tapestry Collection by Hilton" width={150} height={150} style={{ objectFit: 'cover', borderRadius: 5 }} />
+                                    <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                        <Box sx={{ width: '100%', height: 200, position: 'relative' }}>
+                                            <Image src="/hotels/viana.png" alt="Viana Hotel and Spa" fill style={{ objectFit: 'cover' }} />
                                         </Box>
-                                        <Typography variant="body2" paragraph>
-                                            Situated approximately 4.6 miles from Westbury Manor, this hotel provides elegant rooms, an on-site restaurant, and easy access to local attractions.
-                                        </Typography>
+                                        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                            <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
+                                                Viana Hotel and Spa
+                                            </Typography>
+                                            <Typography variant="body2" paragraph sx={{ mb: 3, flexGrow: 1 }}>
+                                                Approximately 1.5 miles from Westbury Manor, this boutique hotel features luxury accommodations, a full-service spa, and the Marco Polo restaurant, blending East and West cuisines.
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                href="https://www.vianahotelandspa.com/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                fullWidth
+                                                sx={{
+                                                    mt: 'auto',
+                                                    color: '#D4AF37',
+                                                    borderColor: '#D4AF37',
+                                                    '&:hover': {
+                                                        borderColor: '#D4AF37',
+                                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                                    },
+                                                }}
+                                            >
+                                                Learn More
+                                            </Button>
+                                        </Box>
                                     </Box>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button variant="outlined" href="https://www.hilton.com/en/hotels/lgarsup-the-roslyn/" target="_blank" rel="noopener noreferrer">
-                                        Learn More
-                                    </Button>
-                                </Box>
-                            </Box>
 
-                            <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mb: 2 }}>
-                                    <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
-                                        Hilton Garden Inn (Roslyn)
-                                    </Typography>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3 }}>
-                                        <Box sx={{ width: 150, height: 150, backgroundColor: 'rgba(255,255,255,0.1)', flexShrink: 0, borderRadius: 1 }}>
-                                            <Image src="/hotels/hiltongardeninnroslyn.png" alt="Hilton Garden Inn (Roslyn)" width={150} height={150} style={{ objectFit: 'cover', borderRadius: 5 }} />
+                                    <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                        <Box sx={{ width: '100%', height: 200, position: 'relative' }}>
+                                            <Image src="/hotels/homewood.png" alt="Homewood Suites by Hilton" fill style={{ objectFit: 'cover' }} />
                                         </Box>
-                                        <Typography variant="body2" paragraph>
-                                            About 5.2 miles from the venue, this hotel offers comfortable accommodations, an indoor pool, and on-site dining facilities.
-                                        </Typography>
+                                        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                            <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
+                                                Homewood Suites by Hilton
+                                            </Typography>
+                                            <Typography variant="body2" paragraph sx={{ mb: 3, flexGrow: 1 }}>
+                                                Located around 1.7 miles from the venue, this all-suite hotel offers extended-stay accommodations with in-room kitchens, complimentary breakfast, and an indoor pool.
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                href="https://www.hilton.com/en/hotels/jfkcphw-homewood-suites-carle-place-garden-city-ny/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                fullWidth
+                                                sx={{
+                                                    mt: 'auto',
+                                                    color: '#D4AF37',
+                                                    borderColor: '#D4AF37',
+                                                    '&:hover': {
+                                                        borderColor: '#D4AF37',
+                                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                                    },
+                                                }}
+                                            >
+                                                Learn More
+                                            </Button>
+                                        </Box>
+                                    </Box>
+
+                                    <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                        <Box sx={{ width: '100%', height: 200, position: 'relative' }}>
+                                            <Image src="/hotels/tapestry.png" alt="The Roslyn, Tapestry Collection by Hilton" fill style={{ objectFit: 'cover' }} />
+                                        </Box>
+                                        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                            <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
+                                                The Roslyn, Tapestry Collection by Hilton
+                                            </Typography>
+                                            <Typography variant="body2" paragraph sx={{ mb: 3, flexGrow: 1 }}>
+                                                Situated approximately 4.6 miles from Westbury Manor, this hotel provides elegant rooms, an on-site restaurant, and easy access to local attractions.
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                href="https://www.hilton.com/en/hotels/lgarsup-the-roslyn/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                fullWidth
+                                                sx={{
+                                                    mt: 'auto',
+                                                    color: '#D4AF37',
+                                                    borderColor: '#D4AF37',
+                                                    '&:hover': {
+                                                        borderColor: '#D4AF37',
+                                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                                    },
+                                                }}
+                                            >
+                                                Learn More
+                                            </Button>
+                                        </Box>
+                                    </Box>
+
+                                    <Box sx={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 2, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                        <Box sx={{ width: '100%', height: 200, position: 'relative' }}>
+                                            <Image src="/hotels/hiltongardeninnroslyn.png" alt="Hilton Garden Inn (Roslyn)" fill style={{ objectFit: 'cover' }} />
+                                        </Box>
+                                        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                            <Typography variant="h6" component="h3" gutterBottom sx={{ color: '#D4AF37' }}>
+                                                Hilton Garden Inn (Roslyn)
+                                            </Typography>
+                                            <Typography variant="body2" paragraph sx={{ mb: 3, flexGrow: 1 }}>
+                                                About 5.2 miles from the venue, this hotel offers comfortable accommodations, an indoor pool, and on-site dining facilities.
+                                            </Typography>
+                                            <Button
+                                                variant="outlined"
+                                                href="https://www.hilton.com/en/hotels/nycpwgi-hilton-garden-inn-roslyn/"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                fullWidth
+                                                sx={{
+                                                    mt: 'auto',
+                                                    color: '#D4AF37',
+                                                    borderColor: '#D4AF37',
+                                                    '&:hover': {
+                                                        borderColor: '#D4AF37',
+                                                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                                                    },
+                                                }}
+                                            >
+                                                Learn More
+                                            </Button>
+                                        </Box>
                                     </Box>
                                 </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                                    <Button variant="outlined" href="https://www.hilton.com/en/hotels/nycpwgi-hilton-garden-inn-roslyn/" target="_blank" rel="noopener noreferrer">
-                                        Learn More
-                                    </Button>
-                                </Box>
-                            </Box>
+                            )}
+                            <Typography variant="body1" sx={{ mt: 4, color: 'white' }}>
+                                We recommend booking your accommodations early, as our wedding date coincides with Halloween festivities, and local hotels may experience higher demand. For additional options and real-time availability, consider visiting Hotels.com or Expedia. If you have any
+                                questions or need further assistance with accommodations, please don&apos;t hesitate to contact us.
+                            </Typography>
                         </Box>
-                        <Typography variant="body1" sx={{ mt: 4, color: 'white' }}>
-                            We recommend booking your accommodations early, as our wedding date coincides with Halloween festivities, and local hotels may experience higher demand. For additional options and real-time availability, consider visiting Hotels.com or Expedia. If you have any questions
-                            or need further assistance with accommodations, please don&apos;t hesitate to contact us.
-                        </Typography>
                     </ImageContent>
                 </ImageSection>
 
@@ -1085,7 +1231,7 @@ export default function Home() {
                             </GoldText>
 
                             <Typography variant="body1" paragraph sx={{ color: 'white', textAlign: 'center', mb: 4, maxWidth: '800px', mx: 'auto' }}>
-                                Your mask is an opportunity to <strong>express your personal style</strong> while embracing the theme. Here are a few ideas:
+                                Your mask is an opportunity to pair with your attire. Here are some styles of masks for inspiration:
                             </Typography>
 
                             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
@@ -1096,7 +1242,7 @@ export default function Home() {
                                             Classic Venetian Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Intricate, timeless, and adorned with metallic accents.
+                                            Intricate and timeless designs, adorned with accents and elegant shapes.
                                         </Typography>
                                         <Button
                                             href="https://www.etsy.com/search?q=venetian+masquerade+mask"
@@ -1123,7 +1269,7 @@ export default function Home() {
                                             Filigree Metal Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Delicate, lace-like designs with a regal touch.
+                                            Delicate, lace-like metalwork with a regal flair and detailed craftsmanship.
                                         </Typography>
                                         <Button
                                             href="https://www.masqueradestore.com/collections/women-lace-masks"
@@ -1150,7 +1296,7 @@ export default function Home() {
                                             Feathered & Plumed Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Bold and dramatic for a statement look.
+                                            Bold designs with feathers or plumes for a dramatic and eye-catching effect.
                                         </Typography>
                                         <Button
                                             href="https://www.simplymasquerade.co.uk/masqueradeshop/cat_50367-Feather-Masks.html"
@@ -1177,7 +1323,7 @@ export default function Home() {
                                             Dark Gothic Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Skulls, ravens, or baroque-inspired designs for a hauntingly beautiful effect.
+                                            Skulls, ravens, or baroque elements for a haunting yet elegant aesthetic.
                                         </Typography>
                                         <Button
                                             href="https://www.etsy.com/search?q=gothic+masquerade+mask"
@@ -1201,13 +1347,13 @@ export default function Home() {
                                 <MasqueradeCard>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
-                                            Minimalist Eye Masks
+                                            Bejeweled & Embellished Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Sleek black, gold, or silver for effortless elegance.
+                                            Crystals, sequins, or rich textures for a luxurious and dazzling finish.
                                         </Typography>
                                         <Button
-                                            href="https://www.masqueradestore.com/simple-eye-masks"
+                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
                                             target="_blank"
                                             variant="outlined"
                                             sx={{
@@ -1225,6 +1371,84 @@ export default function Home() {
                                 </MasqueradeCard>
 
                                 {/* Card 6 */}
+                                <MasqueradeCard>
+                                    <Box sx={{ textAlign: 'center', mb: 2 }}>
+                                        <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
+                                            Minimalist Eye Masks
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
+                                            Simple shapes in black, gold, or silver for a sleek and understated statement.
+                                        </Typography>
+                                        <Button
+                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
+                                            target="_blank"
+                                            variant="outlined"
+                                            sx={{
+                                                color: '#D4AF37',
+                                                borderColor: '#D4AF37',
+                                                '&:hover': {
+                                                    borderColor: '#b8860b',
+                                                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                                                },
+                                            }}
+                                        >
+                                            View Examples
+                                        </Button>
+                                    </Box>
+                                </MasqueradeCard>
+                                {/* Card 7 */}
+                                <MasqueradeCard>
+                                    <Box sx={{ textAlign: 'center', mb: 2 }}>
+                                        <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
+                                            Couples Masks
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
+                                            MMatching or contrasting designs that share a theme for a coordinated statement.
+                                        </Typography>
+                                        <Button
+                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
+                                            target="_blank"
+                                            variant="outlined"
+                                            sx={{
+                                                color: '#D4AF37',
+                                                borderColor: '#D4AF37',
+                                                '&:hover': {
+                                                    borderColor: '#b8860b',
+                                                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                                                },
+                                            }}
+                                        >
+                                            View Examples
+                                        </Button>
+                                    </Box>
+                                </MasqueradeCard>
+                                {/* Card 8 */}
+                                <MasqueradeCard>
+                                    <Box sx={{ textAlign: 'center', mb: 2 }}>
+                                        <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
+                                            Nature Inspired Masks
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
+                                            Floral motifs, leafy patterns, or earthy textures for a touch of woodland enchantment.
+                                        </Typography>
+                                        <Button
+                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
+                                            target="_blank"
+                                            variant="outlined"
+                                            sx={{
+                                                color: '#D4AF37',
+                                                borderColor: '#D4AF37',
+                                                '&:hover': {
+                                                    borderColor: '#b8860b',
+                                                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                                                },
+                                            }}
+                                        >
+                                            View Examples
+                                        </Button>
+                                    </Box>
+                                </MasqueradeCard>
+                                {/* Card 9 */}
                                 <MasqueradeCard>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
@@ -1260,7 +1484,7 @@ export default function Home() {
                             </GoldText>
 
                             <Typography variant="body1" paragraph sx={{ color: 'white', textAlign: 'center', mb: 4, maxWidth: '800px', mx: 'auto' }}>
-                                Skip the Mardi Gras styles—here&apos;s where to find elegant, high-quality masks:
+                                Check these sites for some of the best masks:
                             </Typography>
 
                             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' }, gap: 3 }}>
@@ -1377,41 +1601,8 @@ export default function Home() {
                                 </MasqueradeCard>
                             </Box>
                         </Box>
-                        {/* Tip Box */}
-                        <Box
-                            sx={{
-                                backgroundColor: 'rgba(184, 134, 11, 0.15)',
-                                p: 3,
-                                borderRadius: 2,
-                                mb: 5,
-                                border: '1px solid rgba(184, 134, 11, 0.3)',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 3,
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: 50,
-                                    height: 50,
-                                    borderRadius: '50%',
-                                    backgroundColor: 'rgba(184, 134, 11, 0.2)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '1.8rem',
-                                    flexShrink: 0,
-                                }}
-                            >
-                                💡
-                            </Box>
-                            <Typography variant="body1" sx={{ fontStyle: 'italic', color: 'white' }}>
-                                <strong>Tip:</strong> For comfort, opt for a mask that secures with ribbons or elastic rather than a stick-held design. Some even come on glasses frames for all-night wearability!
-                            </Typography>
-                        </Box>
                         <Typography variant="body1" paragraph sx={{ fontStyle: 'italic', textAlign: 'center', color: 'white' }}>
-                            We can&apos;t wait to see everyone in their masquerade best—whether it&apos;s dramatic and bold or sleek and mysterious. The only rule? <strong>Have fun with it!</strong>
+                            This will be a unique experience, and we can&apos;t wait to see what everyone will come up with!
                         </Typography>
                     </ImageContent>
                 </ImageSection>
@@ -1421,23 +1612,23 @@ export default function Home() {
                         <source src="/disco.mp4" type="video/mp4" />
                     </video>
                     <SectionVideoOverlay />
-                    <VideoContent>
+                    <VideoContent style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', height: '100%', width: '100%' }}>
                         <GoldText variant="h2" gutterBottom>
                             Song Requests
                         </GoldText>
-                        <Typography paragraph sx={{ color: 'white' }}>
+                        <Typography paragraph sx={{ color: 'white', textAlign: 'center' }}>
                             Help us build the ultimate wedding playlist! If there&apos;s a song that will get you on the dance floor, let us know—we want to make sure there&apos;s something for everyone. Whether it&apos;s a classic, a guilty pleasure, or a Halloween-themed banger, we&apos;re taking
                             requests!
                         </Typography>
-                        <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-                            <Box sx={{ width: '100%', maxWidth: '700px', backgroundColor: 'rgba(0,0,0,0.6)', p: 3, borderRadius: 2 }}>
+                        <Box sx={{ mt: 4, display: 'flex', flexDirection: 'row', width: '100%', alignItems: 'center', gap: 3, '@media (max-width: 900px)': { flexDirection: 'column' } }}>
+                            <Box sx={{ width: '100%', maxWidth: '700px' }}>
                                 <iframe src="https://open.spotify.com/embed/playlist/7kgTGs1bijkEt0RsOpoYr0" width="100%" height="380" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title="Wedding Playlist" loading="lazy"></iframe>
                             </Box>
-                            <Box sx={{ textAlign: 'center', maxWidth: '600px', backgroundColor: 'rgba(0,0,0,0.6)', p: 4, borderRadius: 2 }}>
+                            <Box sx={{ textAlign: 'center', justifyContent: 'stretch', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                                 <Typography variant="h6" gutterBottom sx={{ color: '#b8860b' }}>
                                     How to Add Songs:
                                 </Typography>
-                                <Typography paragraph sx={{ color: 'white' }}>
+                                <Typography paragraph sx={{ color: 'white', textAlign: 'center', fontSize: '1rem' }}>
                                     1. Click the Open spotify button below
                                     <br />
                                     2. This will add you as a collaborator on the playlist
@@ -1449,7 +1640,7 @@ export default function Home() {
                                     5. We will pick some songs to play during the reception
                                 </Typography>
                                 <a
-                                    href="https://open.spotify.com/playlist/7kgTGs1bijkEt0RsOpoYr0?si=d1544526443942ec&pt=005ab39bdfebf3feba43f2ba72e8b6f9"
+                                    href="https://open.spotify.com/playlist/7kgTGs1bijkEt0RsOpoYr0?si=6f026cae42d04e01&pt=3218ec0e86e820163c61ab5a18099fcd"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style={{
@@ -1577,11 +1768,18 @@ export default function Home() {
                         <Typography paragraph sx={{ color: 'white', textAlign: 'center', mb: 4 }}>
                             Questions about the wedding? Need help with accommodations? Want to share your excitement? We&apos;d love to hear from you! Drop us a message and we&apos;ll get back to you as soon as we can.
                         </Typography>
-                        <ContactForm>
-                            <StyledInput type="text" placeholder="Your Name" required />
-                            <StyledInput type="email" placeholder="Your Email" required />
-                            <StyledTextArea placeholder="Your Message" required />
+                        <ContactForm onSubmit={handleContactSubmit}>
+                            <StyledInput type="text" name="name" placeholder="Your Name" value={contactForm.name} onChange={handleContactChange} required />
+                            <StyledInput type="email" name="email" placeholder="Your Email" value={contactForm.email} onChange={handleContactChange} required />
+                            <StyledTextArea name="message" placeholder="Your Message" value={contactForm.message} onChange={handleContactChange} required />
                             <SubmitButton type="submit">Send Message</SubmitButton>
+                            {formStatus.show && (
+                                <AlertContainer>
+                                    <Alert severity={formStatus.type} onClose={() => setFormStatus({ show: false, type: 'success', message: '' })}>
+                                        {formStatus.message}
+                                    </Alert>
+                                </AlertContainer>
+                            )}
                         </ContactForm>
                     </ContactContainer>
                     <Footer>
