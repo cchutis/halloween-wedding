@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
+import audioManager from './AudioManager'
 
 interface GameObject {
     x: number
@@ -226,6 +227,13 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
         return bounds1.left < bounds2.right && bounds1.right > bounds2.left && bounds1.top < bounds2.bottom && bounds1.bottom > bounds2.top
     }, [])
 
+    // Check if current score is a high score
+    const checkHighScore = useCallback((score: number): boolean => {
+        // Replace with your high score logic
+        const highScoreThreshold = 5000 // Example threshold
+        return score > highScoreThreshold
+    }, [])
+
     const shoot = useCallback(
         (isEnemy: boolean = false, x: number = player.x, y: number = player.y) => {
             const currentTime = Date.now()
@@ -241,6 +249,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
             // Handle power-up shots
             if (!isEnemy && player.powered) {
                 if (player.powerType === 'beam') {
+                    audioManager.play('playerShootBeam')
                     setBullets((prev) => [
                         ...prev,
                         {
@@ -255,6 +264,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                         },
                     ])
                 } else if (player.powerType === 'spread') {
+                    audioManager.play('playerShootSpread')
                     setBullets((prev) => [
                         ...prev,
                         {
@@ -274,6 +284,13 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                 return
             }
 
+            // Play appropriate shooting sound
+            if (!isEnemy) {
+                audioManager.play('playerShoot')
+            } else {
+                audioManager.play('enemyShoot')
+            }
+            
             setBullets((prev) => [
                 ...prev,
                 {
@@ -595,6 +612,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                 // Check enemy bullet collision with player shield
                 if (bullet.isEnemy && player.shielded && checkCollision({ ...bullet, y: newY }, player)) {
                     setPlayer((p) => ({ ...p, shielded: false }))
+                    audioManager.play('shieldBroken')
                     shouldKeepBullet = false
                 }
 
@@ -649,7 +667,7 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                                 }))
 
                                 // Create explosion at player position
-                                handleExplosion(player.x + player.width / 2, player.y + player.height / 2)
+                                handleExplosion(player.x + player.width / 2, player.y + player.height / 2, true)
 
                                 // Delay game over to show death animation
                                 setTimeout(() => {
@@ -799,7 +817,14 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
         )
     }
 
-    const handleExplosion = (x: number, y: number) => {
+    const handleExplosion = (x: number, y: number, isPlayer: boolean = false) => {
+        // Play appropriate explosion sound
+        if (isPlayer) {
+            audioManager.play('playerExplode')
+        } else {
+            audioManager.play('enemyDestroyed')
+        }
+
         // Create an explosion effect at the given coordinates
         const explosion: Explosion = {
             active: true,
@@ -1369,6 +1394,9 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
 
     const handleKeyDown = useCallback(
         (event: KeyboardEvent) => {
+            // Enable audio on first user interaction
+            audioManager.handleUserInteraction()
+            
             keysRef.current[event.key] = true
 
             if (event.code === 'Space') {
@@ -1412,9 +1440,48 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
             window.removeEventListener('keyup', handleKeyUp)
         }
     }, [handleKeyDown, handleKeyUp])
+    
+    // Effect to handle game state changes and play appropriate music
+    useEffect(() => {
+        // Play appropriate music based on game state
+        switch (gameState) {
+            case 'title':
+                audioManager.stopAll()
+                audioManager.play('titleScreenMusic')
+                break
+            case 'playing':
+                audioManager.stopAll()
+                audioManager.play('gameLoopMusic')
+                break
+            case 'gameOver':
+                audioManager.stopAll()
+                // Check if it's a high score
+                const isHighScore = checkHighScore(player.score)
+                if (isHighScore) {
+                    audioManager.play('highScoreMusic')
+                } else {
+                    audioManager.play('gameOverMusic')
+                }
+                break
+            default:
+                break
+        }
+    }, [gameState, player.score, checkHighScore])
+    
+    // Effect for UFO sound
+    useEffect(() => {
+        if (ufo?.active) {
+            audioManager.play('ufoSound')
+        } else {
+            audioManager.stop('ufoSound')
+        }
+    }, [ufo?.active])
 
     const handleCanvasClick = useCallback(
         (event: React.MouseEvent<HTMLCanvasElement>) => {
+            // Enable audio on first user interaction
+            audioManager.handleUserInteraction()
+            
             if (!canvasRef.current) return
 
             const canvas = canvasRef.current
@@ -1440,6 +1507,8 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
     // Initialize game and show title screen
     useEffect(() => {
         if (!initialized.current) {
+            // Start title screen music
+            audioManager.play('titleScreenMusic')
             initialized.current = true
             setGameState('title')
             // Reset everything to initial state
