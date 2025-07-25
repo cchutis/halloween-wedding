@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, Suspense } from 'react'
-import { Box, Container, Typography, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Button, Alert, CircularProgress } from '@mui/material'
+import { Box, Container, Typography, TextField, FormControl, FormControlLabel, Radio, RadioGroup, Button, ButtonGroup, Alert, CircularProgress } from '@mui/material'
 import styled from 'styled-components'
 import Navigation from '../../components/Navigation'
 import Image from 'next/image'
@@ -16,7 +16,7 @@ const PageWrapper = styled.div`
     flex-direction: column;
 `
 
-const Section = styled.section`
+const Section = styled.section<{ $showVideo?: boolean }>`
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -24,12 +24,41 @@ const Section = styled.section`
     padding: 8rem 2rem;
     position: relative;
     overflow-y: auto;
-    background-image: url('/moon.jpg');
+    background-image: ${(props) => (props.$showVideo ? 'none' : 'url("/moon.jpg")')};
     background-size: cover;
     background-position: center;
 
     @media (max-width: 768px) {
         padding: 4rem 1rem;
+    }
+`
+
+const VideoBackground = styled.video`
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+`
+
+const AudioToggle = styled.button`
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #b8860b;
+    border: 1px solid #b8860b;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background-color: rgba(184, 134, 11, 0.2);
     }
 `
 
@@ -135,6 +164,32 @@ const SubmitButton = styled(Button)`
     }
 `
 
+const GuestButtonGroup = styled(ButtonGroup)`
+    .MuiButton-root {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-color: #b8860b;
+        color: white;
+        min-width: 48px;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background-color: rgba(184, 134, 11, 0.2);
+            border-color: #cd7f32;
+        }
+
+        &.selected {
+            background-color: #b8860b;
+            border-color: #cd7f32;
+            color: white;
+
+            &:hover {
+                background-color: #cd7f32;
+            }
+        }
+    }
+`
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const GoldText = styled((props: any) => <Typography component="h1" {...props} />)`
     color: #b8860b;
@@ -167,29 +222,43 @@ const QrCodeContainer = styled.div`
     margin: 0 auto;
 `
 
+interface AdditionalGuest {
+    name: string
+}
+
 interface GuestInfo {
     name: string
     email: string
     attending: string
-    guests: string
+    bringingGuests: string
+    totalGuests: string
+    additionalGuests: AdditionalGuest[]
+    hasDietaryRestrictions: string
     dietaryRestrictions: string
     songRequest: string
+    memory: string
 }
 
 function RsvpContent() {
     const searchParams = useSearchParams()
     const code = searchParams.get('code')
 
-    const [isValidCode, setIsValidCode] = useState<boolean | null>(null)
+    const [isValidCode, setIsValidCode] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [videoBackground, setVideoBackground] = useState<string | null>(null)
+    const [isMuted, setIsMuted] = useState(true)
     const [formData, setFormData] = useState<GuestInfo>({
         name: '',
         email: '',
         attending: '',
-        guests: '',
+        bringingGuests: '',
+        totalGuests: '',
+        additionalGuests: [],
+        hasDietaryRestrictions: '',
         dietaryRestrictions: '',
         songRequest: '',
+        memory: '',
     })
 
     // Simulate code validation
@@ -210,35 +279,159 @@ function RsvpContent() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }))
+
+        // Handle special case for bringingGuests radio
+        if (name === 'bringingGuests') {
+            setFormData({
+                ...formData,
+                [name]: value,
+                // Reset additional guests if user selects 'no'
+                ...(value === 'no' && {
+                    totalGuests: '',
+                    additionalGuests: [],
+                }),
+            })
+            return
+        }
+
+        // Handle special case for attending radio
+        if (name === 'attending') {
+            // Set appropriate video background based on selection
+            if (value === 'no') {
+                setVideoBackground('yousure.mp4')
+                setIsMuted(false) // Automatically unmute when selecting "No"
+            } else if (value === 'yes') {
+                setVideoBackground('dance.mp4')
+                setIsMuted(false) // Automatically unmute when selecting "Yes"
+            } else {
+                setVideoBackground(null)
+                setIsMuted(true)
+            }
+
+            setFormData({
+                ...formData,
+                [name]: value,
+                // Reset guest-related fields if user selects 'no'
+                ...(value === 'no' && {
+                    bringingGuests: 'no',
+                    totalGuests: '',
+                    additionalGuests: [],
+                }),
+            })
+            return
+        }
+
+        setFormData((prev) => {
+            const updated = {
+                ...prev,
+                [name]: value,
+            }
+
+            // If bringingGuests changes to 'no', reset guest data
+            if (name === 'bringingGuests' && value === 'no') {
+                updated.totalGuests = ''
+                updated.additionalGuests = []
+            }
+            // If bringingGuests changes to 'yes', default to 1 guest
+            else if (name === 'bringingGuests' && value === 'yes') {
+                updated.totalGuests = '1'
+                updated.additionalGuests = [{ name: '' }]
+            }
+
+            return updated
+        })
+    }
+
+    const handleAdditionalGuestChange = (index: number, field: keyof AdditionalGuest, value: string) => {
+        setFormData((prev) => {
+            const updatedAdditionalGuests = [...prev.additionalGuests]
+            updatedAdditionalGuests[index] = {
+                ...updatedAdditionalGuests[index],
+                [field]: value,
+            }
+            return {
+                ...prev,
+                additionalGuests: updatedAdditionalGuests,
+            }
+        })
+    }
+
+    const handleGuestNumberSelect = (additionalGuestCount: number) => {
+        setFormData((prev) => {
+            const currentAdditionalGuests = [...prev.additionalGuests]
+
+            // Add new additional guest entries if needed
+            while (currentAdditionalGuests.length < additionalGuestCount) {
+                currentAdditionalGuests.push({ name: '' })
+            }
+
+            // Remove excess additional guest entries
+            if (currentAdditionalGuests.length > additionalGuestCount) {
+                currentAdditionalGuests.splice(additionalGuestCount)
+            }
+
+            return {
+                ...prev,
+                totalGuests: additionalGuestCount.toString(),
+                additionalGuests: currentAdditionalGuests,
+            }
+        })
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
+        // Validate required fields
+        if (!formData.name || !formData.email || !formData.attending || !formData.hasDietaryRestrictions) {
+            alert('Please fill in all required fields')
+            return
+        }
+
+        // Validate additional required fields based on selections
+        if (formData.attending === 'yes' && !formData.bringingGuests) {
+            alert('Please indicate if you are bringing guests')
+            return
+        }
+
+        // Validate guest information if bringing guests
+        if (formData.bringingGuests === 'yes') {
+            if (!formData.totalGuests) {
+                alert('Please select the number of additional guests')
+                return
+            }
+
+            // Check if all guest names are filled
+            const emptyGuestNames = formData.additionalGuests.some((guest) => !guest.name)
+            if (emptyGuestNames) {
+                alert('Please provide names for all additional guests')
+                return
+            }
+        }
+
         try {
             // Set loading state
             setIsLoading(true)
 
-            // Add your Google Apps Script Web App URL here
-            // It should look like: https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
-            const sheetsApiUrl = 'https://script.google.com/macros/s/AKfycbzN7YzdKWtPqs2vMKDwBXm4YWHG11EGaAhs5n2SKIFLxJQOvE1Yo12EbujCAk79EzSxCQ/exec'
             // Prepare data for submission
             const submissionData = {
                 name: formData.name,
                 email: formData.email,
                 attending: formData.attending,
-                guests: formData.guests || '0',
+                bringingGuests: formData.bringingGuests || 'no',
+                totalGuests: formData.totalGuests || '0',
+                additionalGuests: formData.additionalGuests,
                 dietaryRestrictions: formData.dietaryRestrictions || 'None',
                 songRequest: formData.songRequest || 'None',
+                memory: formData.memory || 'None',
                 timestamp: new Date().toISOString(),
                 code: code || 'Unknown',
             }
 
             console.log('Submitting RSVP data:', submissionData)
+
+            // Add your Google Apps Script Web App URL here
+            // It should look like: https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec
+            const sheetsApiUrl = 'https://script.google.com/macros/s/AKfycbzN7YzdKWtPqs2vMKDwBXm4YWHG11EGaAhs5n2SKIFLxJQOvE1Yo12EbujCAk79EzSxCQ/exec'
 
             // Submit the data to Google Sheets via Apps Script
             await fetch(sheetsApiUrl, {
@@ -281,7 +474,9 @@ function RsvpContent() {
                     <Typography variant="body1" paragraph sx={{ color: 'white', textAlign: 'center', mb: 3 }}>
                         Please scan the QR code from your invitation to access the RSVP form.
                     </Typography>
-                    <Image src="/qr-sample.png" alt="Sample QR Code" width={200} height={200} style={{ marginTop: '1rem' }} />
+                    <div style={{ backgroundColor: 'white' }}>
+                        <Image src="/qr-code-example.png" alt="Sample QR Code" width={200} height={200} style={{ marginTop: '1rem' }} />
+                    </div>
                     <Typography variant="body2" sx={{ color: '#b8860b', mt: 2, textAlign: 'center' }}>
                         If you&apos;re having trouble, please contact us for assistance.
                     </Typography>
@@ -290,8 +485,9 @@ function RsvpContent() {
         }
 
         if (isSubmitted) {
+            const isAttending = formData.attending === 'yes'
             return (
-                <Box sx={{ textAlign: 'center' }}>
+                <Box sx={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
                     <Alert
                         severity="success"
                         sx={{
@@ -305,9 +501,52 @@ function RsvpContent() {
                     <GoldText variant="h4" gutterBottom>
                         Your RSVP has been received
                     </GoldText>
-                    <Typography variant="body1" paragraph sx={{ color: 'white', mb: 3 }}>
-                        We&apos;re looking forward to celebrating with you on our special day.
-                    </Typography>
+
+                    {isAttending ? (
+                        <>
+                            <Typography variant="body1" paragraph sx={{ color: 'white', mb: 3 }}>
+                                We&apos;re so excited you&apos;ll be joining us for our Halloween masquerade wedding!
+                            </Typography>
+
+                            <Box
+                                sx={{
+                                    backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                                    border: '1px solid rgba(184, 134, 11, 0.3)',
+                                    borderRadius: '8px',
+                                    padding: '2rem',
+                                    mb: 3,
+                                    textAlign: 'left',
+                                }}
+                            >
+                                <GoldText variant="h5" gutterBottom sx={{ textAlign: 'center' }}>
+                                    🎭 Masquerade Dress Code Reminder 🎭
+                                </GoldText>
+
+                                <Typography variant="body1" paragraph sx={{ color: 'white', mb: 2 }}>
+                                    <strong>Dress Code:</strong> Wedding attire required! Masquerade masks are strongly preferred.
+                                </Typography>
+
+                                <Typography variant="body1" paragraph sx={{ color: 'white', mb: 2 }}>
+                                    Let your personality shine! Masquerade looks are not limited to masks, they can include headpieces and dramatic makeup. Let your creativity flow!
+                                </Typography>
+
+                                <Button onClick={() => (window.location.href = '/#hero')}>
+                                    <Typography variant="body2" sx={{ color: '#b8860b', textAlign: 'center', mt: 2 }}>
+                                        Click here for more inspiration and details about the masquerade theme!
+                                    </Typography>
+                                </Button>
+                            </Box>
+
+                            <Typography variant="body1" paragraph sx={{ color: 'white', mb: 3 }}>
+                                We can&apos;t wait to see your amazing masquerade look and celebrate this magical night with you!
+                            </Typography>
+                        </>
+                    ) : (
+                        <Typography variant="body1" paragraph sx={{ color: 'white', mb: 3 }}>
+                            We&apos;re sorry you can&apos;t make it, but we understand and appreciate you letting us know.
+                        </Typography>
+                    )}
+
                     <Image src="/logo.png" alt="Wedding Logo" width={100} height={100} style={{ marginTop: '1rem' }} />
                 </Box>
             )
@@ -319,7 +558,7 @@ function RsvpContent() {
                     RSVP
                 </GoldText>
                 <Typography variant="body1" paragraph sx={{ color: 'white', textAlign: 'center', mb: 3 }}>
-                    Please let us know if you&apos;ll be joining us for our Halloween wedding celebration. We kindly request your response by September 15, 2025.
+                    Don&apos;t ghost us! 👻 We kindly request your response by <strong style={{ color: 'maroon', fontSize: '1.3rem' }}>September 30th, 2025</strong>.
                 </Typography>
 
                 <RsvpForm onSubmit={handleSubmit}>
@@ -329,21 +568,104 @@ function RsvpContent() {
 
                     <FormControl component="fieldset" required>
                         <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
-                            Will you be attending?
+                            Will you be attending? *
                         </Typography>
                         <StyledRadioGroup name="attending" value={formData.attending} onChange={handleChange} row>
-                            <FormControlLabel value="yes" control={<Radio />} label="Yes, I'll be there!" />
-                            <FormControlLabel value="no" control={<Radio />} label="Sorry, I can't make it" />
+                            <FormControlLabel value="yes" control={<Radio />} label="🥀 Hex yeah, I'll be there!" />
+                            <FormControlLabel value="no" control={<Radio />} label="🪦 RIP... Can't make it" />
                         </StyledRadioGroup>
                     </FormControl>
 
                     {formData.attending === 'yes' && (
                         <>
-                            <StyledTextField label="Number of Guests (including yourself)" name="guests" type="number" InputProps={{ inputProps: { min: 1, max: 10 } }} value={formData.guests} onChange={handleChange} required fullWidth variant="outlined" />
+                            <FormControl component="fieldset" required>
+                                <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
+                                    Are you bringing a guest? *
+                                </Typography>
+                                <StyledRadioGroup name="bringingGuests" value={formData.bringingGuests} onChange={handleChange} row>
+                                    <FormControlLabel value="no" control={<Radio />} label="No" />
+                                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                                </StyledRadioGroup>
+                            </FormControl>
 
-                            <StyledTextField label="Dietary Restrictions or Allergies" name="dietaryRestrictions" value={formData.dietaryRestrictions} onChange={handleChange} multiline rows={2} fullWidth variant="outlined" />
+                            {formData.bringingGuests === 'yes' && (
+                                <FormControl component="fieldset" required>
+                                    <Typography variant="body2" sx={{ color: '#b8860b', mb: 2 }}>
+                                        Number of Additional Guests
+                                    </Typography>
+                                    <GuestButtonGroup variant="outlined" sx={{ flexWrap: 'wrap', gap: 1 }}>
+                                        {[1, 2].map((num) => (
+                                            <Button key={num} className={formData.totalGuests === num.toString() ? 'selected' : ''} onClick={() => handleGuestNumberSelect(num)}>
+                                                {num}
+                                            </Button>
+                                        ))}
+                                    </GuestButtonGroup>
+                                </FormControl>
+                            )}
 
-                            <StyledTextField label="Song Request" name="songRequest" value={formData.songRequest} onChange={handleChange} placeholder="What song will get you on the dance floor?" fullWidth variant="outlined" />
+                            {/* Additional Guests Details */}
+                            {formData.bringingGuests === 'yes' &&
+                                formData.additionalGuests.map((guest, index) => (
+                                    <Box
+                                        key={index}
+                                        sx={{
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            borderRadius: '8px',
+                                            padding: '1rem',
+                                            backgroundColor: 'rgba(0, 0, 0, 0.3)',
+                                        }}
+                                    >
+                                        <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
+                                            Additional Guest {index + 1}
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                            <StyledTextField label={`Guest ${index + 1} Name`} value={guest.name} onChange={(e) => handleAdditionalGuestChange(index, 'name', e.target.value)} required fullWidth variant="outlined" size="small" />
+                                        </Box>
+                                    </Box>
+                                ))}
+                            <FormControl component="fieldset" required>
+                                <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
+                                    Do you have any dietary restrictions or food allergies? *
+                                </Typography>
+                                <StyledRadioGroup name="hasDietaryRestrictions" value={formData.hasDietaryRestrictions} onChange={handleChange} row>
+                                    <FormControlLabel value="no" control={<Radio />} label="No" />
+                                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                                </StyledRadioGroup>
+                            </FormControl>
+                            {formData.hasDietaryRestrictions === 'yes' && (
+                                <StyledTextField
+                                    label="Dietary Restrictions or Food Allergies (for your whole party)"
+                                    name="dietaryRestrictions"
+                                    value={formData.dietaryRestrictions}
+                                    onChange={handleChange}
+                                    multiline
+                                    rows={2}
+                                    fullWidth
+                                    variant="outlined"
+                                    placeholder="Please list any dietary restrictions or food allergies for anyone in your party"
+                                    required
+                                />
+                            )}
+
+                            <Box>
+                                <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
+                                    Song Request
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2, fontSize: '0.875rem' }}>
+                                    Suggest a song you&apos;d love to hear at the reception! We can&apos;t promise to play every request, but we&apos;ll do our best to include your favorites.
+                                </Typography>
+                                <StyledTextField name="songRequest" value={formData.songRequest} onChange={handleChange} placeholder="What song will get you on the dance floor?" fullWidth variant="outlined" />
+                            </Box>
+
+                            {/* <Box>
+                                <Typography variant="body2" sx={{ color: '#b8860b', mb: 1 }}>
+                                    Share a Memory
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.7)', mb: 2, fontSize: '0.875rem' }}>
+                                    We&apos;d love to hear a favorite memory you have with us! Whether it&apos;s a funny story, a special moment, or just something that makes you smile when you think of us.
+                                </Typography>
+                                <StyledTextField name="memory" value={formData.memory} onChange={handleChange} placeholder="Share a special memory or message..." multiline rows={3} fullWidth variant="outlined" />
+                            </Box> */}
                         </>
                     )}
 
@@ -358,7 +680,20 @@ function RsvpContent() {
     return (
         <PageWrapper>
             <Navigation />
-            <Section>
+            <Section $showVideo={!!videoBackground}>
+                {videoBackground === 'yousure.mp4' && (
+                    <VideoBackground autoPlay loop playsInline muted={isMuted} key="yousure-video">
+                        <source src="/yousure.mp4" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </VideoBackground>
+                )}
+                {videoBackground === 'dance.mp4' && (
+                    <VideoBackground autoPlay loop playsInline muted={isMuted} key="dance-video">
+                        <source src="/dance.mp4" type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </VideoBackground>
+                )}
+                {videoBackground && <AudioToggle onClick={() => setIsMuted(!isMuted)}>{isMuted ? '🔇 Unmute' : '🔊 Mute'}</AudioToggle>}
                 <ImageOverlay />
                 <ContentContainer>{renderContent()}</ContentContainer>
             </Section>
@@ -375,26 +710,28 @@ function RsvpContent() {
 
 export default function RsvpPage() {
     return (
-        <Suspense fallback={
-            <PageWrapper>
-                <Navigation />
-                <Section>
-                    <ImageOverlay />
-                    <ContentContainer>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-                            <CircularProgress sx={{ color: '#b8860b' }} />
-                        </Box>
-                    </ContentContainer>
-                </Section>
-                <Footer>
-                    <Container>
-                        <Typography variant="body2" sx={{ color: '#666' }}>
-                            &copy; 2024 Constantine & Lauren. All rights reserved.
-                        </Typography>
-                    </Container>
-                </Footer>
-            </PageWrapper>
-        }>
+        <Suspense
+            fallback={
+                <PageWrapper>
+                    <Navigation />
+                    <Section>
+                        <ImageOverlay />
+                        <ContentContainer>
+                            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+                                <CircularProgress sx={{ color: '#b8860b' }} />
+                            </Box>
+                        </ContentContainer>
+                    </Section>
+                    <Footer>
+                        <Container>
+                            <Typography variant="body2" sx={{ color: '#666' }}>
+                                &copy; 2024 Constantine & Lauren. All rights reserved.
+                            </Typography>
+                        </Container>
+                    </Footer>
+                </PageWrapper>
+            }
+        >
             <RsvpContent />
         </Suspense>
     )

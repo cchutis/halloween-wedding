@@ -18,7 +18,10 @@ interface Player extends GameObject {
     score: number
     powered: boolean
     powerType?: 'beam' | 'spread' | 'shield'
+    powerTimer: number
     shielded: boolean
+    dying: boolean
+    deathTimer: number
 }
 
 interface Enemy extends GameObject {
@@ -103,7 +106,11 @@ const DAMAGE_RADIUS = 3
 const UFO_HEIGHT = 30
 const UFO_WIDTH = 40
 
-const Game: React.FC = () => {
+interface GameProps {
+    onGameOver?: (score: number) => void
+}
+
+const Game: React.FC<GameProps> = ({ onGameOver }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const animationFrameRef = useRef<number | null>(null)
     const startButtonRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null)
@@ -116,15 +123,18 @@ const Game: React.FC = () => {
     const [powerUp, setPowerUp] = useState<PowerUp | null>(null)
     const [player, setPlayer] = useState<Player>({
         x: GAME_WIDTH / 2 - PLAYER_WIDTH / 2,
-        y: GAME_HEIGHT - PLAYER_HEIGHT - 10,
+        y: GAME_HEIGHT - PLAYER_HEIGHT - 20,
         width: PLAYER_WIDTH,
         height: PLAYER_HEIGHT,
-        speed: CONFIG.PLAYER_SPEED,
+        speed: 5,
         lives: 3,
         score: 0,
         powered: false,
         powerType: undefined,
+        powerTimer: 0,
         shielded: false,
+        dying: false,
+        deathTimer: 0
     })
 
     const [enemies, setEnemies] = useState<Enemy[]>(() => {
@@ -179,6 +189,21 @@ const Game: React.FC = () => {
     const enemyShootInterval = useRef(2000)
     const lastPlayerShot = useRef(Date.now())
     const level = useRef(1)
+
+    // For star animation
+    const [starPositions] = useState(() => {
+        const positions = []
+        for (let i = 0; i < 50; i++) {
+            positions.push({
+                x: Math.random() * GAME_WIDTH,
+                y: Math.random() * GAME_HEIGHT,
+                size: Math.random() * 2 + 1,
+                opacity: Math.random() * 0.7 + 0.3,
+            })
+        }
+        return positions
+    })
+    const lastStarUpdate = useRef(Date.now())
 
     const checkCollision = useCallback((obj1: GameObject, obj2: GameObject) => {
         // Add small buffer to bullet hitbox for more forgiving collisions
@@ -391,11 +416,23 @@ const Game: React.FC = () => {
 
                 // Check for collision with player
                 if (checkCollision({ ...prev, y: newY }, player)) {
-                    setPlayer((p) => ({
-                        ...p,
-                        powered: prev.type !== 'shield',
-                        powerType: prev.type,
-                    }))
+                    if (prev.type === 'shield') {
+                        // For shield powerup, set shielded to true but don't set powered
+                        setPlayer((p) => ({
+                            ...p,
+                            shielded: true,
+                            powerType: prev.type,
+                            powerTimer: 300,
+                        }))
+                    } else {
+                        // For other powerups, set powered to true
+                        setPlayer((p) => ({
+                            ...p,
+                            powered: true,
+                            powerType: prev.type,
+                            powerTimer: 300,
+                        }))
+                    }
                     return { ...prev, active: false }
                 }
 
@@ -538,8 +575,9 @@ const Game: React.FC = () => {
                     )
                 ) {
                     shouldKeepBullet = false
-                    // Drop power-up when UFO is hit
-                    if (!powerUp && ufo) {
+                    // Always drop power-up when UFO is hit
+                    if (ufo) {
+                        // If there's already a powerup, replace it
                         setPowerUp({
                             x: ufo.x + ufo.width / 2,
                             y: ufo.y + ufo.height,
@@ -557,7 +595,7 @@ const Game: React.FC = () => {
                 // Check enemy bullet collision with player shield
                 if (bullet.isEnemy && player.shielded && checkCollision({ ...bullet, y: newY }, player)) {
                     setPlayer((p) => ({ ...p, shielded: false }))
-                    return { ...bullet, active: false }
+                    shouldKeepBullet = false
                 }
 
                 // Check collision with barricades
@@ -593,13 +631,31 @@ const Game: React.FC = () => {
                             )
                         ) {
                             shouldKeepBullet = false
-                            setPlayer((p) => ({
-                                ...p,
-                                lives: p.lives - 1,
-                                score: Math.max(0, p.score - 50),
-                            }))
-                            if (player.lives <= 1) {
-                                setGameState('gameOver')
+                            // If player has a shield, remove it instead of game over
+                            if (player.shielded) {
+                                setPlayer((p) => ({
+                                    ...p,
+                                    shielded: false,
+                                    score: Math.max(0, p.score - 25), // Less penalty when shield absorbs hit
+                                }))
+                            } else {
+                                // No shield, trigger death animation
+                                setPlayer((p) => ({
+                                    ...p,
+                                    lives: 0,
+                                    score: Math.max(0, p.score - 50),
+                                    dying: true,
+                                    deathTimer: 60 // Animation frames
+                                }))
+                                
+                                // Create explosion at player position
+                                handleExplosion(player.x + player.width / 2, player.y + player.height / 2)
+                                
+                                // Delay game over to show death animation
+                                setTimeout(() => {
+                                    setGameState('gameOver')
+                                    onGameOver?.(player.score)
+                                }, 1500) // 1.5 seconds delay
                             }
                         }
                     } else {
@@ -696,6 +752,7 @@ const Game: React.FC = () => {
 
         if (lowestEnemy && lowestEnemy.y + lowestEnemy.height >= CONFIG.GAME_OVER_HEIGHT) {
             setGameState('gameOver')
+            onGameOver?.(player.score)
             return
         }
 
@@ -767,26 +824,212 @@ const Game: React.FC = () => {
 
         ctx.fillStyle = '#000'
         ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT)
+        
+        // Draw stars with slow movement for all game states
+        const now = Date.now()
 
+        // Only update star positions every 50ms for moderate movement
+        if (now - lastStarUpdate.current > 50) {
+            for (let i = 0; i < starPositions.length; i++) {
+                // Move stars at medium speed
+                starPositions[i].y = (starPositions[i].y + 1) % GAME_HEIGHT
+            }
+            lastStarUpdate.current = now
+        }
+
+        // Draw the stars
+        for (let i = 0; i < starPositions.length; i++) {
+            const star = starPositions[i]
+            ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`
+            ctx.beginPath()
+            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2)
+            ctx.fill()
+        }
+        
         if (gameState === 'title') {
-            // Draw title screen
-            ctx.fillStyle = '#fff'
-            ctx.font = '40px Arial'
-            ctx.textAlign = 'center'
+            // Draw spooky background elements
+
+            // Draw some floating pumpkins in the background
+            // for (let i = 0; i < 5; i++) {
+            //     const x = 100 + ((i * 150) % GAME_WIDTH)
+            //     const y = 50 + Math.sin(Date.now() / 1000 + i) * 10
+            //     const size = 15
+
+            //     // Pumpkin body
+            //     ctx.fillStyle = '#ff7700'
+            //     ctx.beginPath()
+            //     ctx.arc(x, y, size, 0, Math.PI * 2)
+            //     ctx.fill()
+
+            //     // Pumpkin face
+            //     ctx.fillStyle = '#000'
+            //     ctx.beginPath()
+            //     ctx.arc(x - size / 3, y - size / 4, size / 5, 0, Math.PI * 2) // Left eye
+            //     ctx.arc(x + size / 3, y - size / 4, size / 5, 0, Math.PI * 2) // Right eye
+            //     ctx.fill()
+
+            //     // Mouth
+            //     ctx.beginPath()
+            //     ctx.arc(x, y + size / 3, size / 3, 0, Math.PI)
+            //     ctx.fill()
+            // }
+
+            // Draw title with glow effect
             const title = 'HALLOWEEN SPACE INVADERS'
-            ctx.fillText(title, GAME_WIDTH / 2, GAME_HEIGHT / 3)
+
+            // Draw shadow/glow
+            ctx.fillStyle = '#ff6600'
+            ctx.font = 'bold 44px "Creepster", cursive, Arial'
+            ctx.textAlign = 'center'
+            ctx.fillText(title, GAME_WIDTH / 2 + 2, 82)
+
+            // Draw main title
+            ctx.fillStyle = '#ffcc00'
+            ctx.font = 'bold 44px "Creepster", cursive, Arial'
+            ctx.fillText(title, GAME_WIDTH / 2, 80)
+
+            // Draw decorative line under title
+            ctx.strokeStyle = '#ff6600'
+            ctx.lineWidth = 3
+            ctx.beginPath()
+            ctx.moveTo(GAME_WIDTH / 2 - 300, 100)
+            ctx.lineTo(GAME_WIDTH / 2 + 300, 100)
+            ctx.stroke()
+
+            // Draw game info in panels
+            const drawPanel = (x, y, width, height) => {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)'
+                ctx.fillRect(x, y, width, height)
+                ctx.strokeStyle = '#ff6600'
+                ctx.lineWidth = 2
+                ctx.strokeRect(x, y, width, height)
+            }
+
+            // Left panel - Controls & Power-ups
+            drawPanel(50, 130, 300, 320)
+
+            // Controls section
+            ctx.font = 'bold 22px Arial'
+            ctx.textAlign = 'left'
+            ctx.fillStyle = '#ffcc00'
+            ctx.fillText('CONTROLS', 80, 160)
+
+            // Draw arrow keys icon
+            ctx.fillStyle = '#aaa'
+            ctx.fillRect(80, 175, 30, 30)
+            ctx.fillStyle = '#000'
+            ctx.fillText('←', 88, 197)
+            ctx.fillStyle = '#aaa'
+            ctx.fillRect(115, 175, 30, 30)
+            ctx.fillStyle = '#000'
+            ctx.fillText('→', 123, 197)
+
+            ctx.fillStyle = '#fff'
+            ctx.font = '18px Arial'
+            ctx.fillText('Move Ship', 160, 195)
+
+            // Draw space bar
+            ctx.fillStyle = '#aaa'
+            ctx.fillRect(80, 215, 100, 25)
+            ctx.fillStyle = '#000'
+            ctx.font = '14px Arial'
+            ctx.fillText('SPACE', 110, 232)
+
+            ctx.fillStyle = '#fff'
+            ctx.font = '18px Arial'
+            ctx.fillText('Shoot', 190, 232)
+
+            // Power-ups section
+            ctx.fillStyle = '#ffcc00'
+            ctx.font = 'bold 22px Arial'
+            ctx.fillText('DESTROY UFOS', 80, 270)
+            ctx.fillText('TO GET POWER-UPS', 80, 290)
+
+            // Function to draw power-up with icon
+            const drawPowerUp = (y, color, name, description) => {
+                // Draw power-up icon
+                ctx.fillStyle = color
+                ctx.beginPath()
+                ctx.arc(95, y, 10, 0, Math.PI * 2)
+                ctx.fill()
+
+                // Draw power-up name and description
+                ctx.fillStyle = color
+                ctx.font = 'bold 18px Arial'
+                ctx.fillText(name, 115, y + 5)
+                ctx.fillStyle = '#fff'
+                ctx.font = '16px Arial'
+                ctx.fillText(description, 115, y + 25)
+            }
+
+            drawPowerUp(310, '#ff0000', 'Beam', 'Powerful laser shot')
+            drawPowerUp(360, '#00ff00', 'Spread', 'Multi-directional shots')
+            drawPowerUp(410, '#0088ff', 'Shield', 'Protects from one hit')
+
+            // Right panel - Prize & Rules
+            drawPanel(450, 130, 300, 320)
+
+            // Special prize section with trophy icon
+            ctx.fillStyle = '#ffcc00'
+            ctx.font = 'bold 22px Arial'
+            ctx.fillText('SPECIAL PRIZE', 480, 160)
+
+            // Draw trophy
+            ctx.fillStyle = '#ffd700'
+            // Trophy cup
+            ctx.beginPath()
+            ctx.arc(500, 185, 15, Math.PI, Math.PI * 2)
+            ctx.fillRect(485, 185, 30, 20)
+            // Trophy base
+            ctx.fillRect(495, 205, 10, 15)
+            ctx.fillRect(490, 220, 20, 5)
+            ctx.fill()
+
+            ctx.fillStyle = '#fff'
+            ctx.font = '18px Arial'
+            ctx.fillText('The #1 high score by', 525, 190)
+            ctx.fillText('the wedding date wins!', 525, 215)
+
+            // Game rules section
+            ctx.fillStyle = '#ffcc00'
+            ctx.font = 'bold 22px Arial'
+            ctx.fillText('GAME RULES', 480, 260)
+
+            ctx.fillStyle = '#fff'
+            ctx.font = '18px Arial'
+
+            // Draw bullet points with small pumpkin icons
+            const drawBulletPoint = (y, text) => {
+                // Small pumpkin bullet
+                ctx.fillStyle = '#ff7700'
+                ctx.beginPath()
+                ctx.arc(490, y - 5, 6, 0, Math.PI * 2)
+                ctx.fill()
+
+                ctx.fillStyle = '#fff'
+                ctx.fillText(text, 505, y)
+            }
+
+            drawBulletPoint(290, 'One hit = Game Over')
+            drawBulletPoint(320, 'Destroy UFOs for power-ups')
+            drawBulletPoint(350, 'Destroy all enemies')
+
+            ctx.fillStyle = '#fff'
+            ctx.font = '18px Arial'
+            ctx.fillText('A crappy game by Constantine', 280, 480)
 
             // Draw start button
             ctx.fillStyle = '#b8860b'
             const buttonWidth = 200
             const buttonHeight = 50
             const buttonX = (GAME_WIDTH - buttonWidth) / 2
-            const buttonY = GAME_HEIGHT / 2
+            const buttonY = GAME_HEIGHT - 100
             ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight)
 
             // Draw button text
             ctx.fillStyle = '#000'
             ctx.font = '24px Arial'
+            ctx.textAlign = 'center'
             ctx.fillText('Start Game', GAME_WIDTH / 2, buttonY + 35)
 
             // Store button position for click detection
@@ -867,14 +1110,57 @@ const Game: React.FC = () => {
             }
         })
 
-        // Draw player with color based on power-up state
-        ctx.fillStyle = player.powered ? (player.powerType === 'beam' ? '#ff0000' : player.powerType === 'spread' ? '#00ff00' : '#fff') : '#fff'
-        ctx.beginPath()
-        ctx.moveTo(player.x + PLAYER_WIDTH / 2, player.y)
-        ctx.lineTo(player.x + PLAYER_WIDTH, player.y + PLAYER_HEIGHT)
-        ctx.lineTo(player.x, player.y + PLAYER_HEIGHT)
-        ctx.closePath()
-        ctx.fill()
+        // Draw player with color based on power-up state or death animation
+        if (player.dying) {
+            // Death animation - draw explosion particles
+            player.deathTimer--;
+            
+            // Calculate fade factor (1.0 to 0.0) as animation progresses
+            const fadeFactor = Math.max(0, player.deathTimer / 60);
+            
+            // Limit the maximum radius to prevent it from taking over the screen
+            // Max radius of 40 pixels that fades out
+            const maxRadius = 40;
+            const radius = maxRadius * Math.min(1, (60 - player.deathTimer) / 30) * fadeFactor;
+            
+            // Only draw if we still have a visible explosion
+            if (fadeFactor > 0.1) {
+                // Create multiple explosion particles
+                const particleCount = 12;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const distance = radius * (0.5 + Math.random() * 0.5);
+                    const x = player.x + PLAYER_WIDTH / 2 + Math.cos(angle) * distance;
+                    const y = player.y + PLAYER_HEIGHT / 2 + Math.sin(angle) * distance;
+                    
+                    // Alternate colors for explosion with opacity based on fade factor
+                    const color = i % 2 === 0 ? 
+                        `rgba(255, 85, 0, ${fadeFactor})` : 
+                        `rgba(255, 221, 0, ${fadeFactor})`;
+                    
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3 + Math.random() * 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                // Draw center of explosion (orange instead of white/grey)
+                ctx.fillStyle = `rgba(255, 140, 0, ${fadeFactor})`;
+                ctx.beginPath();
+                ctx.arc(player.x + PLAYER_WIDTH / 2, player.y + PLAYER_HEIGHT / 2, radius / 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        } else {
+            // Normal player ship
+            ctx.fillStyle = player.powered ? (player.powerType === 'beam' ? '#ff0000' : player.powerType === 'spread' ? '#00ff00' : '#fff') : '#fff'
+            ctx.beginPath()
+            ctx.moveTo(player.x + PLAYER_WIDTH / 2, player.y)
+            ctx.lineTo(player.x + PLAYER_WIDTH, player.y + PLAYER_HEIGHT)
+            ctx.lineTo(player.x, player.y + PLAYER_HEIGHT)
+            ctx.closePath()
+            ctx.fill()
+        }
 
         // Draw shield if active
         if (player.shielded) {
@@ -920,7 +1206,7 @@ const Game: React.FC = () => {
         ctx.font = '20px Arial'
         ctx.textAlign = 'left'
         ctx.fillText(`Score: ${player.score}`, 20, 30)
-        ctx.fillText(`Lives: ${player.lives}`, 20, 60)
+        ctx.fillText(`${player.shielded ? 'Shield Active' : 'No Shield'}`, 20, 60)
         ctx.fillText(`Level: ${level.current}`, 20, 90)
 
         // Draw explosions
@@ -932,8 +1218,13 @@ const Game: React.FC = () => {
                 return
             }
 
-            ctx.fillStyle = `rgba(0, 255, 0, ${1 - progress})`
-            ctx.fillRect(explosion.x - explosion.width / 2, explosion.y, explosion.width, explosion.height)
+            // Orange explosion particles instead of green
+            ctx.fillStyle = `rgba(255, 140, 0, ${1 - progress})`
+            
+            // Draw circular explosion instead of rectangle
+            ctx.beginPath()
+            ctx.arc(explosion.x, explosion.y, explosion.width / 2 * (1 - progress * 0.5), 0, Math.PI * 2)
+            ctx.fill()
         })
 
         if (gameState === 'gameOver') {
@@ -1040,10 +1331,14 @@ const Game: React.FC = () => {
             width: PLAYER_WIDTH,
             height: PLAYER_HEIGHT,
             speed: CONFIG.PLAYER_SPEED,
-            lives: 3,
+            lives: 1,
             score: 0,
             powered: false,
+            powerType: undefined,
+            powerTimer: 0,
             shielded: false,
+            dying: false,
+            deathTimer: 0
         })
 
         // Initialize new barricades
@@ -1084,6 +1379,24 @@ const Game: React.FC = () => {
                     shoot()
                 }
             }
+
+            // Testing shortcuts for powerups (only in playing state)
+            /* Commented out for production
+            if (gameState === 'playing') {
+                // Apply beam powerup with key '1'
+                if (event.key === '1') {
+                    setPlayer(prev => ({ ...prev, powered: true, powerType: 'beam', powerTimer: 300 }))
+                }
+                // Apply spread powerup with key '2'
+                else if (event.key === '2') {
+                    setPlayer(prev => ({ ...prev, powered: true, powerType: 'spread', powerTimer: 300 }))
+                }
+                // Apply shield powerup with key '3'
+                else if (event.key === '3') {
+                    setPlayer(prev => ({ ...prev, powered: true, powerType: 'shield', powerTimer: 300, shielded: true }))
+                }
+            }
+            */
         },
         [gameState, shoot]
     )
@@ -1138,7 +1451,7 @@ const Game: React.FC = () => {
                 width: PLAYER_WIDTH,
                 height: PLAYER_HEIGHT,
                 speed: CONFIG.PLAYER_SPEED,
-                lives: 3,
+                lives: 1,
                 score: 0,
                 powered: false,
                 shielded: false,
@@ -1154,7 +1467,7 @@ const Game: React.FC = () => {
     return (
         <div
             style={{
-                width: '100%',
+                // width: '100%',
                 height: '100%',
                 display: 'flex',
                 justifyContent: 'center',

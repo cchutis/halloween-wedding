@@ -25,8 +25,6 @@ const GlobalStyle = createGlobalStyle`
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Estonia', cursive;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: none;
     font-smooth: never;
     font-variant-ligatures: none;
     font-kerning: none;

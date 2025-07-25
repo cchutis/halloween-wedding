@@ -24,17 +24,16 @@ const NavButton = styled(Button)`
     }
 
     @media (max-width: 1024px) {
-        display: none;
+        display: none !important;
     }
 `
 
 const MobileMenuButton = styled(IconButton)`
     color: #b8860b;
-    display: none;
-    margin-left: auto;
+    display: none !important;
 
     @media (max-width: 1024px) {
-        display: flex;
+        display: flex !important;
     }
 `
 
@@ -57,7 +56,7 @@ const StyledDrawer = styled(Drawer)`
 
 const DrawerListItem = styled(ListItemButton)`
     color: #b8860b !important;
-    
+
     &:hover {
         color: #cd7f32 !important;
         background-color: rgba(205, 127, 50, 0.1) !important;
@@ -68,8 +67,12 @@ const Navigation = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     const scrollToSection = (id: string) => {
-        const element = document.getElementById(id)
-        element?.scrollIntoView({ behavior: 'smooth' })
+        if (window.location.pathname === '/rsvp') {
+            window.location.href = `/#${id}`
+        } else {
+            const element = document.getElementById(id)
+            element?.scrollIntoView({ behavior: 'smooth' })
+        }
         setMobileMenuOpen(false)
     }
 
@@ -80,6 +83,7 @@ const Navigation = () => {
         { id: 'hotels', label: 'Hotels' },
         { id: 'masquerade', label: 'Masquerade' },
         { id: 'song-requests', label: 'Request a Song' },
+        { id: 'game', label: 'Wedding Invaders' },
         { id: 'honeyfund', label: 'Registry' },
         { id: 'contact', label: 'Contact Us' },
     ]
@@ -90,38 +94,32 @@ const Navigation = () => {
                 <Box
                     sx={{
                         display: 'flex',
-                        justifyContent: 'center',
+                        justifyContent: 'space-between',
                         alignItems: 'center',
                         width: '100%',
                         maxWidth: '1200px',
                         margin: '0 auto',
                     }}
                 >
-                    <LogoContainer>
-                        <Image src="/logo.png" alt="Logo" width={60} height={60} style={{ objectFit: 'contain' }} priority />
-                    </LogoContainer>
-                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                        {menuItems.map((item) => (
-                            <NavButton key={item.id} onClick={() => scrollToSection(item.id)}>
-                                {item.label}
-                            </NavButton>
-                        ))}
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <LogoContainer>
+                            <Image src="/logo.png" alt="Logo" width={60} height={60} style={{ objectFit: 'contain' }} priority />
+                        </LogoContainer>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            {menuItems.map((item) => (
+                                <NavButton key={item.id} onClick={() => scrollToSection(item.id)}>
+                                    {item.label}
+                                </NavButton>
+                            ))}
+                        </Box>
                     </Box>
-                    <MobileMenuButton
-                        edge="end"
-                        onClick={() => setMobileMenuOpen(true)}
-                        aria-label="menu"
-                    >
+                    <MobileMenuButton edge="end" onClick={() => setMobileMenuOpen(true)} aria-label="menu">
                         <MenuIcon />
                     </MobileMenuButton>
                 </Box>
             </StyledToolbar>
 
-            <StyledDrawer
-                anchor="right"
-                open={mobileMenuOpen}
-                onClose={() => setMobileMenuOpen(false)}
-            >
+            <StyledDrawer anchor="right" open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}>
                 <List>
                     {menuItems.map((item) => (
                         <ListItem key={item.id} disablePadding>
