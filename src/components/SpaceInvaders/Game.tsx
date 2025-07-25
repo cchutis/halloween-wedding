@@ -1455,6 +1455,9 @@ const Game: React.FC<GameProps> = ({ onGameOver }) => {
                 score: 0,
                 powered: false,
                 shielded: false,
+                powerTimer: 0,
+                dying: false,
+                deathTimer: 0
             })
             setEnemies([])
             setBullets([])
