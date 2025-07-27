@@ -2041,7 +2041,6 @@ export default function Home() {
                                 boxShadow: 24,
                                 p: 4,
                                 borderRadius: 2,
-                                position: 'relative',
                             }}
                         >
                             <IconButton
