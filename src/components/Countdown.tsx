@@ -11,8 +11,17 @@ const CountdownContainer = styled(Box)`
     position: relative;
 
     @media (max-width: 768px) {
-        gap: 1.5rem;
+        gap: 0.75rem;
         padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, auto);
+        margin-top: 0.5rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 280px;
+        margin-left: auto;
+        margin-right: auto;
     }
 `
 
@@ -33,14 +42,17 @@ const TimeUnit = styled(Box)`
         margin-top: 24px;
 
         @media (max-width: 768px) {
-            right: -1rem;
-            font-size: 1.5rem;
-            top: 0.2rem;
+            content: none;
         }
     }
 
     @media (max-width: 768px) {
-        min-width: 60px;
+        min-width: unset;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 `
 
@@ -54,7 +66,12 @@ const TimeNumber = styled(Typography)`
     line-height: 1;
 
     @media (max-width: 768px) {
-        font-size: 2.5rem !important;
+        font-size: 2.2rem !important;
+        margin-bottom: 0.25rem !important;
+    }
+    
+    @media (max-width: 350px) {
+        font-size: 1.8rem !important;
     }
 `
 
@@ -69,8 +86,14 @@ const TimeLabel = styled(Typography)`
     border-radius: 4px;
 
     @media (max-width: 768px) {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.4rem;
+        font-size: 0.65rem;
+        padding: 0.15rem 0.3rem;
+        letter-spacing: 1px;
+    }
+    
+    @media (max-width: 350px) {
+        font-size: 0.6rem;
+        padding: 0.1rem 0.25rem;
     }
 `
 

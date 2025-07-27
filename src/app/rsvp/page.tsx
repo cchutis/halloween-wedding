@@ -259,15 +259,15 @@ function RsvpContent() {
         songRequest: '',
     })
 
-    // Simulate code validation
+    // Code validation removed - allowing direct access to RSVP form
+    // Still maintaining compatibility with QR code
     useEffect(() => {
         const validateCode = async () => {
-            // Only accept the specific code "readytomaskup"
             setIsLoading(true)
 
             setTimeout(() => {
-                // Only the code "readytomaskup" is valid
-                setIsValidCode(code === 'readytomaskup')
+                // Always set to true to allow access regardless of code
+                setIsValidCode(true)
                 setIsLoading(false)
             }, 1000)
         }

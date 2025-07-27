@@ -1,11 +1,13 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Box, Button, Container, Typography, CircularProgress, Alert, Modal, Backdrop, Fade } from '@mui/material'
+import { Box, Container, Typography, Button, CircularProgress, Alert, Modal, Backdrop, Fade, IconButton } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 import Image from 'next/image'
 import styled, { keyframes } from 'styled-components'
 import Navigation from '../components/Navigation'
 import Countdown from '../components/Countdown'
+import GhostlyRsvpButton from '../components/GhostlyRsvpButton'
 import dynamic from 'next/dynamic'
 import { getTopScores, LeaderboardScore } from '@/lib/leaderboard'
 
@@ -85,7 +87,7 @@ const VideoOverlay = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(20, 20, 20, 0.7));
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(20, 20, 20, 0.5));
     z-index: 1;
 `
 const HoneyfundLink = styled.a`
@@ -591,9 +593,10 @@ export default function Home() {
                         <Box
                             sx={{
                                 background: 'rgba(0,0,0,0.4)',
-                                backdropFilter: 'blur(8px)',
+                                backdropFilter: 'blur(4px)',
                                 borderRadius: '16px',
-                                padding: { xs: '2rem 1.5rem', md: '3rem 4rem' },
+                                padding: { xs: '2rem 1.5rem', md: '2rem 4rem' },
+                                marginTop: { xs: '20px', md: '80px' },
                                 border: '1px solid rgba(184, 134, 11, 0.3)',
                                 boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), 0 0 8px rgba(184, 134, 11, 0.2)',
                                 width: { xs: '95%', sm: '85%', md: 'auto' },
@@ -645,6 +648,7 @@ export default function Home() {
                                 A Halloween Masquerade Wedding
                             </Typography>
                             <Countdown />
+                            <GhostlyRsvpButton />
                         </Box>
                     </Container>
                 </HeroSection>
@@ -2037,8 +2041,27 @@ export default function Home() {
                                 boxShadow: 24,
                                 p: 4,
                                 borderRadius: 2,
+                                position: 'relative',
                             }}
                         >
+                            <IconButton
+                                onClick={handleCloseModal}
+                                sx={{
+                                    position: 'absolute',
+                                    top: 10,
+                                    left: 10,
+                                    color: '#D4AF37',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                        color: '#cd7f32',
+                                    },
+                                    zIndex: 10,
+                                }}
+                                aria-label="close"
+                            >
+                                <CloseIcon />
+                            </IconButton>
                             <Typography variant="h5" sx={{ color: '#D4AF37', mb: 2, textAlign: 'center' }}>
                                 {modalTitle} Ideas
                             </Typography>
