@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Box, Button, Container, Typography, CircularProgress, Alert } from '@mui/material'
+import { Box, Button, Container, Typography, CircularProgress, Alert, Modal, Backdrop, Fade } from '@mui/material'
+import Image from 'next/image'
 import styled, { keyframes } from 'styled-components'
 import Navigation from '../components/Navigation'
 import Countdown from '../components/Countdown'
-import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { getTopScores, LeaderboardScore } from '@/lib/leaderboard'
 
@@ -483,12 +483,43 @@ export default function Home() {
         message: '',
     })
 
+    // Modal state for mask examples
+    const [modalOpen, setModalOpen] = useState(false)
+    const [modalCategory, setModalCategory] = useState('')
+    const [modalTitle, setModalTitle] = useState('')
+    const [modalImageCount, setModalImageCount] = useState(6) // Default to 6 images
+
     const handleContactChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
         setContactForm((prev) => ({
             ...prev,
             [name]: value,
         }))
+    }
+
+    // Modal handlers for mask examples
+    // Image counts for each mask category
+    const categoryImageCounts: Record<string, number> = {
+        venetian: 15,
+        filigree: 21,
+        feathered: 18,
+        gothic: 12,
+        bejeweled: 16,
+        minimalist: 12,
+        couples: 7,
+        nature: 9,
+        artistic: 24,
+    }
+
+    const handleOpenModal = (category: string, title: string) => {
+        setModalCategory(category)
+        setModalTitle(title)
+        setModalImageCount(categoryImageCounts[category] || 6) // Set image count based on category
+        setModalOpen(true)
+    }
+
+    const handleCloseModal = () => {
+        setModalOpen(false)
     }
 
     const handleContactSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -1237,6 +1268,28 @@ export default function Home() {
                             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 3 }}>
                                 {/* Card 1 */}
                                 <MasqueradeCard>
+                                    {/* Venetian mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/venetian/venetian12.jpg"
+                                            alt="Classic Venetian Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Classic Venetian Masks
@@ -1245,8 +1298,7 @@ export default function Home() {
                                             Intricate and timeless designs, adorned with accents and elegant shapes.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=venetian+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('venetian', 'Classic Venetian Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1264,6 +1316,28 @@ export default function Home() {
 
                                 {/* Card 2 */}
                                 <MasqueradeCard>
+                                    {/* Filigree mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/filigree/filigree18.jpg"
+                                            alt="Filigree Metal Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Filigree Metal Masks
@@ -1272,8 +1346,7 @@ export default function Home() {
                                             Delicate, lace-like metalwork with a regal flair and detailed craftsmanship.
                                         </Typography>
                                         <Button
-                                            href="https://www.masqueradestore.com/collections/women-lace-masks"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('filigree', 'Filigree Metal Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1291,6 +1364,28 @@ export default function Home() {
 
                                 {/* Card 3 */}
                                 <MasqueradeCard>
+                                    {/* Feathered mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/feathered/feathered04.jpg"
+                                            alt="Feathered Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Feathered & Plumed Masks
@@ -1299,8 +1394,7 @@ export default function Home() {
                                             Bold designs with feathers or plumes for a dramatic and eye-catching effect.
                                         </Typography>
                                         <Button
-                                            href="https://www.simplymasquerade.co.uk/masqueradeshop/cat_50367-Feather-Masks.html"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('feathered', 'Feathered & Plumed Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1318,6 +1412,28 @@ export default function Home() {
 
                                 {/* Card 4 */}
                                 <MasqueradeCard>
+                                    {/* Gothic mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/gothic/gothic02.jpg"
+                                            alt="Dark Gothic Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Dark Gothic Masks
@@ -1326,8 +1442,7 @@ export default function Home() {
                                             Skulls, ravens, or baroque elements for a haunting yet elegant aesthetic.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('gothic', 'Dark Gothic Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1345,16 +1460,37 @@ export default function Home() {
 
                                 {/* Card 5 */}
                                 <MasqueradeCard>
+                                    {/* Bejeweled mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/bejeweled/bejeweled11.jpg"
+                                            alt="Bejeweled & Glittering Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
-                                            Bejeweled & Embellished Masks
+                                            Bejeweled & Glittering Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Crystals, sequins, or rich textures for a luxurious and dazzling finish.
+                                            Adorned with crystals, sequins, or rhinestones for a dazzling appearance.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('bejeweled', 'Bejeweled & Glittering Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1372,6 +1508,28 @@ export default function Home() {
 
                                 {/* Card 6 */}
                                 <MasqueradeCard>
+                                    {/* Minimalist mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/minimalist/minimalist09.jpg"
+                                            alt="Minimalist Eye Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Minimalist Eye Masks
@@ -1380,8 +1538,7 @@ export default function Home() {
                                             Simple shapes in black, gold, or silver for a sleek and understated statement.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('minimalist', 'Minimalist Eye Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1398,16 +1555,37 @@ export default function Home() {
                                 </MasqueradeCard>
                                 {/* Card 7 */}
                                 <MasqueradeCard>
+                                    {/* Couples mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/couples/couples04.jpg"
+                                            alt="Couples Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Couples Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            MMatching or contrasting designs that share a theme for a coordinated statement.
+                                            Matching or contrasting designs that share a theme for a coordinated statement.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('couples', 'Couples Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1424,16 +1602,37 @@ export default function Home() {
                                 </MasqueradeCard>
                                 {/* Card 8 */}
                                 <MasqueradeCard>
+                                    {/* Nature mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/nature/nature01.jpg"
+                                            alt="Nature-Inspired Mask"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
-                                            Nature Inspired Masks
+                                            Nature-Inspired Masks
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Floral motifs, leafy patterns, or earthy textures for a touch of woodland enchantment.
+                                            Designs featuring leaves, flowers, or animal motifs for an enchanted forest feel.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('nature', 'Nature-Inspired Masks')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1450,16 +1649,37 @@ export default function Home() {
                                 </MasqueradeCard>
                                 {/* Card 9 */}
                                 <MasqueradeCard>
+                                    {/* Artistic mask image */}
+                                    <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: 150,
+                                            mb: 3,
+                                            borderRadius: 1,
+                                            border: '1px solid rgba(184, 134, 11, 0.3)',
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                        }}
+                                    >
+                                        <Image
+                                            src="/mask-categories/artistic/artistic11.jpg"
+                                            alt="Artistic Makeup"
+                                            fill
+                                            style={{
+                                                objectFit: 'cover',
+                                            }}
+                                            priority
+                                        />
+                                    </Box>
                                     <Box sx={{ textAlign: 'center', mb: 2 }}>
                                         <Typography variant="h6" sx={{ color: '#D4AF37', fontWeight: 'bold', mb: 1 }}>
                                             Artistic Makeup
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: 'white', mb: 2 }}>
-                                            Intricate designs, bold colors, or metallic accents for a dramatic and mask-free look.
+                                            Bold colors, fine details, or metallic touches for a dramatic, mask-free look.
                                         </Typography>
                                         <Button
-                                            href="https://www.etsy.com/search?q=gothic+masquerade+mask"
-                                            target="_blank"
+                                            onClick={() => handleOpenModal('artistic', 'Artistic Makeup')}
                                             variant="outlined"
                                             sx={{
                                                 color: '#D4AF37',
@@ -1790,6 +2010,93 @@ export default function Home() {
                         </Container>
                     </Footer>
                 </ContactSection>
+
+                {/* Mask Examples Modal */}
+                <Modal
+                    open={modalOpen}
+                    onClose={handleCloseModal}
+                    closeAfterTransition
+                    BackdropComponent={Backdrop}
+                    BackdropProps={{
+                        timeout: 500,
+                    }}
+                >
+                    <Fade in={modalOpen}>
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                width: { xs: '90%', sm: '80%', md: '70%' },
+                                maxWidth: 800,
+                                maxHeight: '80vh',
+                                overflow: 'auto',
+                                bgcolor: 'rgba(0, 0, 0, 0.9)',
+                                border: '2px solid #D4AF37',
+                                boxShadow: 24,
+                                p: 4,
+                                borderRadius: 2,
+                            }}
+                        >
+                            <Typography variant="h5" sx={{ color: '#D4AF37', mb: 2, textAlign: 'center' }}>
+                                {modalTitle} Ideas
+                            </Typography>
+
+                            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2, mb: 3 }}>
+                                {/* Display all available images from the mask-categories folders */}
+                                {Array.from({ length: modalImageCount }).map((_, index) => {
+                                    const imageNumber = (index + 1).toString().padStart(2, '0')
+                                    const imagePath = `/mask-categories/${modalCategory}/${modalCategory}${imageNumber}.jpg`
+
+                                    return (
+                                        <Box
+                                            key={index}
+                                            sx={{
+                                                height: 200,
+                                                backgroundColor: 'rgba(50, 50, 50, 0.3)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                borderRadius: 1,
+                                                border: '1px solid rgba(184, 134, 11, 0.3)',
+                                                overflow: 'hidden',
+                                                position: 'relative',
+                                            }}
+                                        >
+                                            <Image
+                                                src={imagePath}
+                                                alt={`${modalTitle} example ${index + 1}`}
+                                                fill
+                                                style={{
+                                                    objectFit: 'cover',
+                                                }}
+                                                priority={index < 3} // Prioritize loading the first 3 images
+                                            />
+                                        </Box>
+                                    )
+                                })}
+                            </Box>
+
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <Button
+                                    onClick={handleCloseModal}
+                                    variant="outlined"
+                                    sx={{
+                                        color: '#D4AF37',
+                                        borderColor: '#D4AF37',
+                                        '&:hover': {
+                                            borderColor: '#b8860b',
+                                            backgroundColor: 'rgba(184, 134, 11, 0.1)',
+                                        },
+                                    }}
+                                >
+                                    Close
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Fade>
+                </Modal>
             </Box>
         </PageWrapper>
     )
